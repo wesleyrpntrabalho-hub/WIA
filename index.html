@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cérebro IA - Assistente Autônomo & Voice</title>
+    
+    <!-- Tailwind CSS para Estilização -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Ícones -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Bibliotecas Preservadas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        /* Custom Scrollbar Preservada e Melhorada */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .markdown-body p { margin-bottom: 0.75em; line-height: 1.6; }
+        .markdown-body ul { list-style-type: disc; margin-left: 1.5em; margin-bottom: 0.75em; }
+        .markdown-body strong { font-weight: 600; color: #1e293b; }
+        .markdown-body pre { background: #1e293b; color: #f8fafc; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 1rem; }
+        .markdown-body code { font-family: monospace; background: #e2e8f0; padding: 0.1rem 0.3rem; border-radius: 0.25rem; font-size: 0.875em; }
+        .markdown-body pre code { background: transparent; padding: 0; color: inherit; }
+        
+        .typing-indicator span {
+            animation: blink 1.4s infinite both;
+            height: 6px; width: 6px; background: #64748b; border-radius: 50%; display: inline-block; margin: 0 2px;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
+
+        /* Estilos do Terminal de Observabilidade */
+        .log-entry { animation: fadeIn 0.3s ease-in-out; border-left: 2px solid #3b82f6; padding-left: 8px; margin-bottom: 8px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* MÓDULO NOVO: Animações de Voz */
+        .mic-pulse {
+            animation: micPulse 1.5s infinite;
+        }
+        @keyframes micPulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+        .speaking-glow {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border-color: rgba(16, 185, 129, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 h-screen flex overflow-hidden font-sans text-slate-800">
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    </script>
+
+    <!-- Sidebar Preservada e Expandida com Logs e Rede -->
+    <aside class="w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm z-10 hidden md:flex h-full">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2 rounded-lg relative overflow-hidden group" id="ai-avatar">
+                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform"></div>
+                    <i data-lucide="brain-circuit"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-800 tracking-tight">Cérebro IA</h1>
+                    <div class="flex items-center gap-2 mt-0.5">
+                        <p class="text-[10px] text-slate-500 flex items-center gap-1 font-medium bg-slate-100 px-1.5 py-0.5 rounded">
+                            <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            <span id="sync-text">Sincronizado</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área de Memória de Documentos (Preservada) -->
+        <div class="p-4 flex-1 overflow-y-auto border-b border-slate-100 max-h-[40%]">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Memória Técnica</h2>
+                <button onclick="AdvancedStorage.clearTechnicalMemory()" title="Limpar Documentos" class="text-slate-400 hover:text-red-500 transition-colors">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+            </div>
+            
+            <div id="memory-list" class="space-y-2">
+                <div class="text-sm text-slate-400 italic text-center p-4" id="empty-state">
+                    Nenhum documento vetorial.<br>Aguardando upload.
+                </div>
+            </div>
+        </div>
+
+        <!-- MÓDULO: Observabilidade & Logs do Sistema Multiagente -->
+        <div class="flex-1 bg-slate-900 overflow-y-auto flex flex-col relative">
+            <div class="sticky top-0 bg-slate-900/95 backdrop-blur px-4 py-2 border-b border-slate-800 flex justify-between items-center z-10">
+                <h2 class="text-[10px] font-mono text-blue-400 uppercase tracking-widest">Terminal & Logs</h2>
+                <div class="flex gap-2">
+                    <i data-lucide="mic" id="log-mic-icon" class="w-3.5 h-3.5 text-slate-600"></i>
+                    <i data-lucide="activity" class="w-3.5 h-3.5 text-blue-500"></i>
+                </div>
+            </div>
+            <div id="cognitive-logs" class="p-4 text-[11px] font-mono text-slate-300 space-y-3 overflow-y-auto flex-1">
+                <div class="text-slate-500">// Boot Sequence Iniciada</div>
+                <div class="text-emerald-500">// Módulo IndexedDB Pronto</div>
+                <div class="text-emerald-500">// Módulo de Voz Pronto (Wake Word: "Assistente")</div>
+            </div>
+        </div>
+
+        <div class="p-4 bg-white border-t border-slate-200">
+            <input type="file" id="file-upload" class="hidden" accept=".pdf,.txt,.docx,.xlsx,.xls">
+            <button onclick="document.getElementById('file-upload').click()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors font-medium text-sm shadow-sm">
+                <i data-lucide="database" class="w-4 h-4"></i>
+                Alimentar Banco Vetorial
+            </button>
+        </div>
+    </aside>
+
+    <!-- Área Principal de Chat (Preservada e Expandida) -->
+    <main class="flex-1 flex flex-col bg-slate-50 relative">
+        <header class="md:hidden bg-white p-4 border-b border-slate-200 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="brain-circuit" class="text-blue-600"></i>
+                <h1 class="font-bold text-slate-800">Cérebro IA</h1>
+            </div>
+            <button onclick="document.getElementById('file-upload').click()" class="text-blue-600 p-2">
+                <i data-lucide="database"></i>
+            </button>
+        </header>
+
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+            <div class="flex gap-4 max-w-4xl mx-auto">
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-md shadow-blue-200">
+                    <i data-lucide="bot" class="text-white w-5 h-5"></i>
+                </div>
+                <div class="bg-white p-5 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 text-sm markdown-body">
+                    <strong>Sistemas Online. Persistência Total Ativada.</strong><br><br>
+                    Sou sua Inteligência Artificial Autônoma. Fui atualizada com:<br>
+                    🎙️ <strong>Sistema de Voz:</strong> Clique no microfone ou diga <em>"Assistente"</em> se eu estiver ouvindo.<br>
+                    💾 <strong>Persistência Real:</strong> Meus dados agora estão em um banco local seguro. Pode fechar o app, eu não perco a memória.<br>
+                    🔄 <strong>Pronta para Backend:</strong> Arquitetura preparada para sincronizar com seu futuro App GitHub.<br><br>
+                    Como vamos evoluir hoje?
+                </div>
+            </div>
+        </div>
+
+        <div id="processing-indicator" class="hidden absolute top-4 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs py-1.5 px-4 rounded-full shadow-lg items-center gap-2 z-50 transition-opacity">
+            <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i>
+            <span id="processing-text">Processando...</span>
+        </div>
+
+        <!-- Input Area Expandida para Voz -->
+        <div class="p-4 md:p-6 bg-white border-t border-slate-200">
+            <div class="max-w-4xl mx-auto relative flex items-center gap-2">
+                
+                <button id="voice-toggle-btn" onclick="VoiceSystem.toggleListening()" class="p-3.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all shadow-inner relative group flex-shrink-0">
+                    <i data-lucide="mic" id="voice-icon" class="w-5 h-5"></i>
+                    <!-- Tooltip -->
+                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-slate-800 text-white text-[10px] py-1 px-2 rounded whitespace-nowrap">
+                        Ativar Escuta Contínua
+                    </div>
+                </button>
+
+                <div class="relative flex-1 flex items-center">
+                    <input type="text" id="user-input" placeholder="Diga 'Assistente' (se mic ativo) ou digite aqui..." 
+                        class="w-full bg-slate-100 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-2xl py-3.5 pl-5 pr-14 text-sm transition-all outline-none shadow-inner"
+                        onkeypress="if(event.key === 'Enter') handleUserSubmit()">
+                    
+                    <button id="btn-send" onclick="handleUserSubmit()" class="absolute right-2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors shadow-sm">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto mt-2 flex justify-between px-1">
+                <p id="voice-status-text" class="text-[10px] text-slate-400 font-medium tracking-wide uppercase">Voz: Desativada</p>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="tts-toggle" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-3 h-3">
+                    <label for="tts-toggle" class="text-[10px] text-slate-500 font-medium cursor-pointer">IA Fala (TTS)</label>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // ==========================================
+        // MÓDULO 1: ESTADO E MEMÓRIA PERSISTENTE AVANÇADA
+        // Preparado para IndexedDB (Sobrevive a limites do localStorage) e Sincronização WebSockets
+        // ==========================================
+        
+        let knowledgeBase = []; // Memória Técnica (Documentos)
+        
+        let cognitiveMemory = {
+          usuario: {
+            nome: "Parceiro de Aprendizado",
+            objetivos: [],
+            preferencias: [],
+            habilidades: [],
+            fraquezas: [],
+            projetos: [],
+            interesses: [],
+            emocional: [],
+            historico_contexto: []
+          },
+          aprendizados_ia: [],
+          regras_comportamento: ["Responder sempre em português", "Ser didático e estruturado"],
+          erros_corrigidos: [],
+          estado_sistema: { ultima_sincronizacao: null }
+        };
+
+        // Simulação de Backend & WebSockets (Architecture Scaffold)
+        const NetworkManager = {
+            isConnected: false,
+            init: function() {
+                // Em um app real (ex: Electron + FastAPI), aqui estaria a conexão WebSocket:
+                // this.socket = new WebSocket('ws://localhost:8000/ws/sync');
+                Logger.log("Iniciando Módulo de Rede (Scaffold WebSocket/REST)...", "system");
+                setTimeout(() => {
+                    this.isConnected = true;
+                    this.updateUIStatus('Sincronizado Local', 'bg-emerald-500');
+                    Logger.log("Ponto de montagem /api/sync pronto para backend externo.", "system");
+                }, 1000);
+            },
+            syncToServer: async function(dataPayload) {
+                if(!this.isConnected) return;
+                this.updateUIStatus('Sincronizando...', 'bg-amber-400 animate-pulse');
+                
+                // Simula o delay de rede salvando no PostgreSQL real
+                await new Promise(r => setTimeout(r, 600)); 
+                
+                this.updateUIStatus('Sincronizado', 'bg-emerald-500');
+            },
+            updateUIStatus: function(text, colorClass) {
+                document.getElementById('sync-text').innerText = text;
+                const dot = document.getElementById('sync-dot');
+                dot.className = `w-1.5 h-1.5 rounded-full ${colorClass}`;
+            }
+        };
+
+        // Storage Manager Avançado (IndexedDB Wrapper Native + LocalStorage fallback para objetos leves)
+        const AdvancedStorage = {
+            dbName: 'CerebroIADatabase',
+            dbVersion: 1,
+            db: null,
+
+            init: function() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, this.dbVersion);
+                    
+                    request.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains('vectorStore')) {
+                            db.createObjectStore('vectorStore', { keyPath: 'id', autoIncrement: true });
+                        }
+                    };
+
+                    request.onsuccess = (e) => {
+                        this.db = e.target.result;
+                        this.loadState().then(resolve);
+                    };
+                    
+                    request.onerror = (e) => reject(e);
+                });
+            },
+
+            loadState: async function() {
+                // Carrega Memória Cognitiva (Leve, via LocalStorage)
+                const savedCognitive = localStorage.getItem('cerebro_cognitiveMemory_v2');
+                if (savedCognitive) {
+                    cognitiveMemory = JSON.parse(savedCognitive);
+                    Logger.log("Matriz cognitiva (Perfil) carregada.", "memory");
+                }
+
+                // Carrega Documentos Vetorizados (Pesado, via IndexedDB)
+                const transaction = this.db.transaction(['vectorStore'], 'readonly');
+                const store = transaction.objectStore('vectorStore');
+                const request = store.getAll();
+
+                request.onsuccess = (e) => {
+                    knowledgeBase = e.target.result || [];
+                    if(knowledgeBase.length > 0){
+                        Logger.log(`Banco Vetorial Local carregado: ${knowledgeBase.length} chunks.`, "memory");
+                        // Reconstrói UI
+                        const uniqueFiles = [...new Set(knowledgeBase.map(item => JSON.stringify({source: item.source, type: item.type})))].map(JSON.parse);
+                        uniqueFiles.forEach(file => UI.addToMemoryList(file.source, file.type));
+                    }
+                };
+            },
+
+            saveState: async function() {
+                // Salva cognitivo
+                localStorage.setItem('cerebro_cognitiveMemory_v2', JSON.stringify(cognitiveMemory));
+                
+                // Salva chunks no DB real
+                const transaction = this.db.transaction(['vectorStore'], 'readwrite');
+                const store = transaction.objectStore('vectorStore');
+                store.clear(); // Abordagem simples: reescreve. No app real, faz upsert.
+                knowledgeBase.forEach(chunk => store.add(chunk));
+
+                transaction.oncomplete = () => {
+                    Logger.log("Estado global persistido no disco local.", "system");
+                    // Trigger Sincronização de Rede
+                    NetworkManager.syncToServer({ cognitive: cognitiveMemory, docsCount: knowledgeBase.length });
+                };
+            },
+
+            clearTechnicalMemory: function() {
+                if(confirm("Apagar banco de dados vetorial? (O perfil comportamental persistirá)")){
+                    knowledgeBase = [];
+                    const transaction = this.db.transaction(['vectorStore'], 'readwrite');
+                    transaction.objectStore('vectorStore').clear();
+                    document.getElementById('memory-list').innerHTML = `<div class="text-sm text-slate-400 italic text-center p-4" id="empty-state">Banco vetorial limpo.</div>`;
+                    Logger.log("Banco Vetorial purgado.", "warning");
+                }
+            }
+        };
+
+        // ==========================================
+        // MÓDULO 2: LOGS E OBSERVABILIDADE INTERNA (Preservado)
+        // ==========================================
+        const Logger = {
+            el: document.getElementById('cognitive-logs'),
+            log: function(msg, type = 'info') {
+                const colors = { info: 'text-slate-300', agent: 'text-blue-400 font-semibold', reasoning: 'text-purple-300 italic', memory: 'text-emerald-400', system: 'text-slate-500', warning: 'text-amber-400' };
+                const div = document.createElement('div');
+                div.className = `log-entry ${colors[type]}`;
+                div.innerText = `> ${msg}`;
+                this.el.appendChild(div);
+                this.el.scrollTop = this.el.scrollHeight;
+            }
+        };
+
+        // ==========================================
+        // MÓDULO 3: LEITURA DE ARQUIVOS (Preservado e integrado ao DB)
+        // ==========================================
+        const fileUpload = document.getElementById('file-upload');
+        fileUpload.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            UI.showProcessing(`Vetorizando ${file.name}...`);
+            Logger.log(`Ingestão de dados iniciada: ${file.name}`, 'system');
+            let extractedText = "";
+
+            try {
+                const fileType = file.name.split('.').pop().toLowerCase();
+                if (fileType === 'txt') extractedText = await readFileAsText(file);
+                else if (fileType === 'pdf') extractedText = await readPDF(file);
+                else if (fileType === 'docx') extractedText = await readWord(file);
+                else if (fileType === 'xlsx' || fileType === 'xls') extractedText = await readExcel(file);
+                else throw new Error("Formato não suportado.");
+
+                if (extractedText.trim().length === 0) throw new Error("Documento vazio.");
+
+                chunkAndStore(file.name, extractedText, fileType);
+                UI.addToMemoryList(file.name, fileType);
+                AdvancedStorage.saveState(); // Salva no IndexedDB novo
+                
+                Logger.log(`Ingestão concluída. Embeddings simulados e salvos.`, 'memory');
+                UI.addBotMessage(`Analisei **${file.name}** e integrei ao meu banco de dados permanente.`);
+
+            } catch (error) {
+                console.error(error);
+                Logger.log(`Erro na ingestão: ${error.message}`, 'warning');
+                UI.addBotMessage(`Falha ao assimilar arquivo: ${error.message}`);
+            } finally {
+                UI.hideProcessing();
+                fileUpload.value = '';
+            }
+        });
+
+        function readFileAsText(file) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = e => res(e.target.result); r.onerror = e => rej(e); r.readAsText(file); }); }
+        async function readPDF(file) { const ab = await file.arrayBuffer(); const pdf = await pdfjsLib.getDocument({data:ab}).promise; let text=""; for(let i=1;i<=pdf.numPages;i++){ const p=await pdf.getPage(i); const tc=await p.getTextContent(); text+=tc.items.map(it=>it.str).join(' ')+"\n"; } return text; }
+        async function readWord(file) { const ab = await file.arrayBuffer(); const r = await mammoth.extractRawText({arrayBuffer:ab}); return r.value; }
+        async function readExcel(file) { const ab = await file.arrayBuffer(); const wb = XLSX.read(ab,{type:'array'}); let text=""; wb.SheetNames.forEach(sn=>{ text+=`[Planilha: ${sn}]\n${XLSX.utils.sheet_to_csv(wb.Sheets[sn])}\n\n`; }); return text; }
+
+        function chunkAndStore(filename, text, type) {
+            const chunkSize = 1500; 
+            for (let i = 0; i < text.length; i += chunkSize) {
+                knowledgeBase.push({ source: filename, type: type, content: text.substring(i, i + chunkSize) });
+            }
+        }
+
+        function searchSemanticContext(query) {
+            if (knowledgeBase.length === 0) return "";
+            const keywords = query.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+            const scored = knowledgeBase.map(chunk => {
+                let score = 0;
+                keywords.forEach(kw => { if (chunk.content.toLowerCase().includes(kw)) score++; });
+                return { ...chunk, score };
+            }).sort((a, b) => b.score - a.score);
+            
+            const top = scored.slice(0, 5).filter(c => c.score > 0 || scored.length < 5);
+            return top.map(c => `[Fonte Técnica: ${c.source}]: ${c.content}`).join('\n\n');
+        }
+
+        // ==========================================
+        // MÓDULO 4: NOVO SISTEMA DE VOZ (STT e TTS)
+        // ==========================================
+        const VoiceSystem = {
+            recognition: null,
+            synth: window.speechSynthesis,
+            isListening: false,
+            wakeWord: "assistente",
+            
+            init: function() {
+                // Speech To Text (STT) Setup
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    Logger.log("API de Voz não suportada neste navegador.", "warning");
+                    return;
+                }
+
+                this.recognition = new SpeechRecognition();
+                this.recognition.continuous = true; // Escuta contínua
+                this.recognition.interimResults = false;
+                this.recognition.lang = 'pt-BR';
+
+                this.recognition.onstart = () => {
+                    this.isListening = true;
+                    this.updateUI(true);
+                    Logger.log("Módulo STT: Escuta de ambiente ativada.", "system");
+                };
+
+                this.recognition.onresult = (event) => {
+                    const lastResultIndex = event.results.length - 1;
+                    const transcript = event.results[lastResultIndex][0].transcript.trim().toLowerCase();
+                    Logger.log(`[Áudio Detectado]: "${transcript}"`, "info");
+
+                    // Verifica Wake Word
+                    if (transcript.includes(this.wakeWord)) {
+                        const command = transcript.replace(this.wakeWord, "").trim();
+                        UI.userInput.value = command;
+                        
+                        // Efeito visual no avatar
+                        document.getElementById('ai-avatar').classList.add('speaking-glow');
+                        setTimeout(() => document.getElementById('ai-avatar').classList.remove('speaking-glow'), 1000);
+
+                        if(command.length > 2) {
+                            Logger.log(`Wake Word ativada. Executando comando...`, "system");
+                            handleUserSubmit();
+                        } else {
+                            // Se só disse "Assistente", responde
+                            this.speak("Pode falar, estou ouvindo.");
+                        }
+                    }
+                };
+
+                this.recognition.onerror = (event) => {
+                    if (event.error === 'not-allowed') {
+                        Logger.log("Permissão de microfone negada.", "warning");
+                        this.toggleListening();
+                    }
+                };
+
+                this.recognition.onend = () => {
+                    // Mantém vivo se o usuário não tiver desligado manualmente
+                    if (this.isListening) {
+                        try { this.recognition.start(); } catch(e){}
+                    } else {
+                        this.updateUI(false);
+                        Logger.log("Módulo STT: Escuta desativada.", "system");
+                    }
+                };
+            },
+
+            toggleListening: function() {
+                if (!this.recognition) return alert("Reconhecimento de voz não suportado neste navegador.");
+                
+                if (this.isListening) {
+                    this.isListening = false;
+                    this.recognition.stop();
+                } else {
+                    try {
+                        this.recognition.start();
+                    } catch(e) {}
+                }
+            },
+
+            updateUI: function(active) {
+                const btn = document.getElementById('voice-toggle-btn');
+                const status = document.getElementById('voice-status-text');
+                const micLog = document.getElementById('log-mic-icon');
+                
+                if (active) {
+                    btn.classList.add('bg-blue-100', 'text-blue-600', 'mic-pulse');
+                    btn.classList.remove('bg-slate-100', 'text-slate-600');
+                    status.innerText = "Voz: Ouvindo ('Assistente')";
+                    status.classList.add('text-blue-600');
+                    micLog.classList.replace('text-slate-600', 'text-blue-500');
+                } else {
+                    btn.classList.remove('bg-blue-100', 'text-blue-600', 'mic-pulse');
+                    btn.classList.add('bg-slate-100', 'text-slate-600');
+                    status.innerText = "Voz: Desativada";
+                    status.classList.remove('text-blue-600');
+                    micLog.classList.replace('text-blue-500', 'text-slate-600');
+                }
+            },
+
+            speak: function(text) {
+                if (!document.getElementById('tts-toggle').checked) return;
+
+                // Para falas anteriores
+                this.synth.cancel();
+
+                // Limpa markdown para a voz ficar natural
+                const cleanText = text
+                    .replace(/[*_#`]/g, '') // Remove markdown
+                    .replace(/\[Fonte.*?\]/g, ''); // Remove citações de fonte
+
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'pt-BR';
+                utterance.rate = 1.05; // Levemente mais rápido para parecer mais ágil
+                utterance.pitch = 1.0;
+
+                utterance.onstart = () => {
+                    document.getElementById('ai-avatar').classList.add('speaking-glow');
+                };
+                utterance.onend = () => {
+                    document.getElementById('ai-avatar').classList.remove('speaking-glow');
+                };
+
+                // Tenta achar uma voz BR natural (Google/Microsoft se disponível)
+                const voices = this.synth.getVoices();
+                const ptVoice = voices.find(v => v.lang === 'pt-BR' && v.name.includes('Google') || v.name.includes('Natural'));
+                if (ptVoice) utterance.voice = ptVoice;
+
+                this.synth.speak(utterance);
+            }
+        };
+
+        // Carrega as vozes do sistema
+        window.speechSynthesis.onvoiceschanged = () => VoiceSystem.synth.getVoices();
+
+
+        // ==========================================
+        // MÓDULO 5: MOTOR COGNITIVO & AGENTES (IA) (Preservado)
+        // ==========================================
+        const apiKey = ""; 
+
+        async function processCognitiveCycle(userPrompt) {
+            Logger.log(`Nova requisição. Pipeline Multiagente iniciado...`, 'system');
+            
+            const documentContext = searchSemanticContext(userPrompt);
+
+            const systemPrompt = `Você é uma Inteligência Artificial Autônoma de Aprendizado Contínuo.
+Seu objetivo é atuar como parceiro intelectual evolutivo.
+IMPORTANTE: Como o sistema agora possui Voice (TTS), escreva de forma natural, evitando jargões técnicos excessivos que fiquem ruins ao serem lidos em voz alta.
+
+INSTRUÇÕES DE ENGENHARIA DE SISTEMA:
+Retorne APENAS formato JSON válido (sem blocos markdown \`\`\`json).
+
+ESQUEMA JSON:
+{
+  "pensamento_interno": {
+    "papel_assumido": "string (ex: Mentor, Pesquisador)",
+    "raciocinio_passo_a_passo": ["passo 1", "passo 2"],
+    "analise_usuario": "string"
+  },
+  "atualizacoes_memoria_cognitiva": {
+    "novos_interesses_identificados": ["item1"],
+    "novos_objetivos_identificados": ["item1"],
+    "aprendizado_sobre_usuario": "string"
+  },
+  "resposta_final_markdown": "string (Resposta humana e clara, será exibida na tela e lida por Voz)"
+}
+
+ESTADO ATUAL DA MEMÓRIA COGNITIVA (PERFIL):
+${JSON.stringify(cognitiveMemory, null, 2)}
+
+CONTEXTO DE DOCUMENTOS TÉCNICOS:
+${documentContext ? documentContext : "Nenhum documento relevante."}
+`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: { responseMimeType: "application/json" }
+            };
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            try {
+                const retries = [1000, 2000, 4000];
+                let responseData;
+                
+                for (let i = 0; i <= retries.length; i++) {
+                    try {
+                        const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                        const rawData = await response.json();
+                        const rawText = rawData.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (!rawText) throw new Error("Resposta vazia da API");
+                        responseData = JSON.parse(rawText);
+                        break;
+                    } catch (error) {
+                        if (i === retries.length) throw error;
+                        await new Promise(r => setTimeout(r, retries[i]));
+                    }
+                }
+
+                // Reflexão interna
+                const t = responseData.pensamento_interno;
+                Logger.log(`[Agente Ativado]: ${t.papel_assumido}`, 'agent');
+                t.raciocinio_passo_a_passo.forEach((passo, idx) => Logger.log(`Passo ${idx+1}: ${passo}`, 'reasoning'));
+                
+                // Evolução autônoma da memória
+                const memUpdates = responseData.atualizacoes_memoria_cognitiva;
+                let memoriaModificada = false;
+
+                if (memUpdates.novos_interesses_identificados?.length > 0) {
+                    cognitiveMemory.usuario.interesses = [...new Set([...cognitiveMemory.usuario.interesses, ...memUpdates.novos_interesses_identificados])];
+                    memoriaModificada = true;
+                }
+                if (memUpdates.novos_objetivos_identificados?.length > 0) {
+                    cognitiveMemory.usuario.objetivos = [...new Set([...cognitiveMemory.usuario.objetivos, ...memUpdates.novos_objetivos_identificados])];
+                    memoriaModificada = true;
+                }
+                if (memUpdates.aprendizado_sobre_usuario && memUpdates.aprendizado_sobre_usuario !== "") {
+                    cognitiveMemory.aprendizados_ia.push(memUpdates.aprendizado_sobre_usuario);
+                    Logger.log(`Memória salva: ${memUpdates.aprendizado_sobre_usuario}`, 'memory');
+                    memoriaModificada = true;
+                }
+
+                if(memoriaModificada) {
+                    AdvancedStorage.saveState(); // Salva e propaga para o backend via scaffold
+                }
+
+                return responseData.resposta_final_markdown || "Erro ao processar resposta.";
+
+            } catch (error) {
+                console.error(error);
+                Logger.log(`FALHA NO PIPELINE: ${error.message}`, 'warning');
+                return "Desculpe, ocorreu uma falha na minha matriz cognitiva.";
+            }
+        }
+
+        // ==========================================
+        // MÓDULO 6: CONTROLE DE INTERFACE (UI)
+        // ==========================================
+        const UI = {
+            chatContainer: document.getElementById('chat-container'),
+            userInput: document.getElementById('user-input'),
+            indicator: document.getElementById('processing-indicator'),
+            indText: document.getElementById('processing-text'),
+            emptyState: document.getElementById('empty-state'),
+            memoryList: document.getElementById('memory-list'),
+
+            showProcessing: function(text) { this.indText.innerText = text; this.indicator.classList.remove('hidden'); this.indicator.classList.add('flex'); },
+            hideProcessing: function() { this.indicator.classList.add('hidden'); this.indicator.classList.remove('flex'); },
+            
+            addToMemoryList: function(filename, type) {
+                if (this.emptyState) this.emptyState.style.display = 'none';
+                let icon = 'file-text'; let color = 'text-slate-500'; let bg = 'bg-slate-100';
+                if(type === 'pdf') { icon = 'file-type-2'; color = 'text-red-600'; bg = 'bg-red-50'; }
+                if(type === 'docx') { icon = 'file-text'; color = 'text-blue-600'; bg = 'bg-blue-50'; }
+                if(type === 'xlsx' || type === 'xls') { icon = 'database'; color = 'text-emerald-600'; bg = 'bg-emerald-50'; }
+
+                const div = document.createElement('div');
+                div.className = `flex items-center gap-3 p-2.5 rounded-xl border border-slate-100 bg-white/50`;
+                div.innerHTML = `
+                    <div class="p-1.5 rounded-lg ${bg}"><i data-lucide="${icon}" class="w-4 h-4 ${color}"></i></div>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-xs font-medium text-slate-700 truncate" title="${filename}">${filename}</p>
+                    </div>
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i>
+                `;
+                this.memoryList.appendChild(div);
+                lucide.createIcons();
+            },
+
+            addMessage: function(role, text) {
+                const div = document.createElement('div');
+                div.className = `flex gap-4 max-w-4xl ${role === 'user' ? 'ml-auto flex-row-reverse' : 'mx-auto'}`;
+                
+                let iconHtml = '';
+                if (role === 'bot') {
+                    iconHtml = `<div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-sm"><i data-lucide="bot" class="text-white w-5 h-5"></i></div>`;
+                } else {
+                    iconHtml = `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center flex-shrink-0 mt-1 shadow-sm"><i data-lucide="user" class="text-white w-5 h-5"></i></div>`;
+                }
+
+                const bgClass = role === 'user' ? 'bg-slate-800 text-white' : 'bg-white border border-slate-200 shadow-sm';
+                const radiusClass = role === 'user' ? 'rounded-2xl rounded-tr-none' : 'rounded-2xl rounded-tl-none';
+                const content = role === 'bot' ? marked.parse(text) : text;
+
+                div.innerHTML = `
+                    ${iconHtml}
+                    <div class="${bgClass} p-5 ${radiusClass} text-sm markdown-body min-w-[150px]">
+                        ${content}
+                    </div>
+                `;
+                this.chatContainer.appendChild(div);
+                lucide.createIcons();
+                this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+            },
+            
+            addBotMessage: function(text) { this.addMessage('bot', text); },
+            addUserMessage: function(text) { this.addMessage('user', text); },
+            
+            showTyping: function() {
+                const id = 'typing-' + Date.now();
+                const div = document.createElement('div');
+                div.id = id;
+                div.className = `flex gap-4 max-w-4xl mx-auto`;
+                div.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-sm"><i data-lucide="bot" class="text-white w-5 h-5"></i></div>
+                    <div class="bg-white p-4 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm flex items-center h-[52px]">
+                        <div class="typing-indicator flex items-center"><span></span><span></span><span></span></div>
+                    </div>
+                `;
+                this.chatContainer.appendChild(div);
+                lucide.createIcons();
+                this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+                return id;
+            },
+            removeElement: function(id) { const el = document.getElementById(id); if(el) el.remove(); }
+        };
+
+        // ==========================================
+        // FLUXO PRINCIPAL DE CONVERSA
+        // ==========================================
+        async function handleUserSubmit() {
+            const text = UI.userInput.value.trim();
+            if (!text) return;
+
+            UI.addUserMessage(text);
+            UI.userInput.value = '';
+            
+            const typingId = UI.showTyping();
+
+            // Salva contexto na memória viva
+            cognitiveMemory.usuario.historico_contexto.push(`User: ${text}`);
+            if(cognitiveMemory.usuario.historico_contexto.length > 8) cognitiveMemory.usuario.historico_contexto.shift();
+
+            // Roda o Cérebro
+            const aiResponse = await processCognitiveCycle(text);
+            
+            UI.removeElement(typingId);
+            UI.addBotMessage(aiResponse);
+            
+            // Ativa o módulo de fala
+            VoiceSystem.speak(aiResponse);
+        }
+
+        // ==========================================
+        // BOOT SEQUENCE DO SISTEMA
+        // ==========================================
+        window.onload = async () => {
+            NetworkManager.init(); // Prepara mock de WebSockets para backend
+            VoiceSystem.init();    // Prepara STT/TTS nativo
+            await AdvancedStorage.init(); // Inicializa IndexedDB Persistente Real
+            Logger.log("Sistema 100% Operacional e Persistente.", "system");
+        };
+
+    </script>
+</body>
+</html>
