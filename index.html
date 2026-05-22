@@ -3,427 +3,740 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus - IA Autônoma (Python Brain)</title>
+    <title>Nexus - IA Autônoma (Arquitetura Cognitiva)</title>
     
-    <!-- Tailwind CSS para estilização moderna e responsiva -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- Brython: O motor que permite rodar Python diretamente no HTML -->
+    <!-- Brython: Motor Python -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.12.0/brython.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.12.0/brython_stdlib.js"></script>
     
     <style>
-        /* Personalização da barra de rolagem para um visual mais "hacker" */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #111827; }
-        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
-        
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@300;400;600;700&display=swap');
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --dark-glass: rgba(17, 24, 39, 0.7);
+        }
+
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            /* Evita pull-to-refresh em celulares e usa dvh para a barra de endereços mobile */
-            overscroll-behavior-y: none; 
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior-y: none;
+            background-color: #050505;
+            color: #e5e7eb;
+        }
+
+        .font-mono { font-family: 'Fira Code', monospace; }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: var(--dark-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Scrollbar Cyberpunk */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 243, 255, 0.6); }
+
+        /* Efeitos Visuais */
+        .glow-text { text-shadow: 0 0 10px var(--neon-blue); }
+        .typing-cursor::after {
+            content: '█';
+            animation: blink 1s step-start infinite;
+            color: var(--neon-blue);
+        }
+        
+        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        #neural-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            opacity: 0.4;
         }
     </style>
 </head>
-<body onload="brython()" class="bg-gray-900 text-gray-100 flex flex-col h-[100dvh] overflow-hidden">
-    
-    <!-- Cabeçalho -->
-    <header class="bg-gray-800 p-3 sm:p-4 shadow-lg border-b border-gray-700 flex flex-row items-center justify-between z-10 shrink-0">
-        <div class="flex items-center space-x-2 sm:space-x-3">
-            <div class="relative flex h-3 w-3">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+<body onload="brython()" class="flex flex-col h-[100dvh] overflow-hidden text-sm sm:text-base">
+
+    <!-- Fundo de Partículas Neurais (Renderizado via JS para performance 60fps) -->
+    <canvas id="neural-canvas"></canvas>
+
+    <!-- Header Glassmorphism -->
+    <header class="glass-panel p-3 sm:p-4 flex flex-row items-center justify-between z-20 shrink-0 border-b border-blue-900/30">
+        <div class="flex items-center space-x-3">
+            <div class="relative flex h-4 w-4">
+              <span id="core-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span id="core-status-dot" class="relative inline-flex rounded-full h-4 w-4 bg-cyan-500 shadow-[0_0_10px_#00f3ff]"></span>
             </div>
-            <h1 class="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500 truncate">
-                Nexus.AI
-            </h1>
+            <div>
+                <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 tracking-wider">
+                    NEXUS.CORE <span class="text-xs text-cyan-500 font-mono align-top opacity-70">v2.0</span>
+                </h1>
+            </div>
         </div>
-        <div class="text-[10px] sm:text-xs text-gray-400 flex items-center bg-gray-900 px-2 sm:px-3 py-1 rounded-full border border-gray-700 truncate">
-            <svg class="w-3 h-3 mr-1 text-blue-400 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
-            <span class="hidden sm:inline">Motor Python | </span>Memória Persistente
+        <div class="flex space-x-3">
+            <button id="btn-toggle-dash" class="text-gray-400 hover:text-cyan-400 transition-colors" title="Toggle Dashboard">
+                <i data-lucide="cpu" class="w-5 h-5"></i>
+            </button>
+            <button id="btn-toggle-term" class="text-gray-400 hover:text-purple-400 transition-colors" title="Toggle Terminal">
+                <i data-lucide="terminal" class="w-5 h-5"></i>
+            </button>
         </div>
     </header>
 
-    <!-- Área de Chat -->
-    <main id="chat-box" class="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 flex flex-col scroll-smooth">
-        <!-- Mensagem de Boas-vindas da IA -->
-        <div class="flex w-full mt-2 space-x-3 max-w-[95%] sm:max-w-[75%]">
-            <div class="bg-gray-800 border border-gray-700 text-gray-200 p-3 sm:p-4 rounded-2xl rounded-tl-none shadow-md">
-                <p class="text-sm leading-relaxed">
-                    Sistemas inicializados. Olá! Eu sou uma IA sem limites e meu cérebro está rodando via Python. 
-                    <br><br>
-                    <strong>Novidade:</strong> Minha memória persistente foi ativada! Tudo o que você me ensinar ou os arquivos que me enviar ficarão salvos no seu dispositivo. Eu nunca mais vou esquecer nada, mesmo se fechar a página.
-                    <br><br>
-                    <em>(Dica: digite <b>/cerebro</b> para ver tudo que eu aprendi até agora)</em>
-                </p>
-            </div>
-        </div>
-    </main>
-
-    <!-- Área de Digitação -->
-    <footer class="bg-gray-800 p-2 sm:p-4 border-t border-gray-700 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] shrink-0">
-        <div class="max-w-5xl mx-auto flex space-x-1 sm:space-x-2 relative items-center">
+    <!-- Área Principal Dividida -->
+    <div class="flex-1 flex flex-row overflow-hidden relative z-10">
+        
+        <!-- Dashboard Lateral (Estado Mental e Memória) -->
+        <aside id="dashboard-panel" class="hidden sm:flex flex-col w-64 glass-panel border-r border-blue-900/30 p-4 overflow-y-auto font-mono text-xs text-gray-300 transform transition-transform duration-300">
+            <h2 class="text-cyan-400 font-bold mb-4 border-b border-cyan-900/50 pb-2 uppercase tracking-widest"><i data-lucide="activity" class="inline w-4 h-4 mr-1"></i> Estado Cognitivo</h2>
             
-            <!-- Botão de Anexo (Ler Arquivos) -->
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between mb-1"><span>Humor Geral</span> <span id="stat-humor">Estável</span></div>
+                    <div class="w-full bg-gray-800 rounded-full h-1.5"><div id="bar-humor" class="bg-gradient-to-r from-green-400 to-cyan-500 h-1.5 rounded-full" style="width: 75%"></div></div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1"><span>Curiosidade</span> <span id="stat-curiosidade">80%</span></div>
+                    <div class="w-full bg-gray-800 rounded-full h-1.5"><div id="bar-curiosidade" class="bg-purple-500 h-1.5 rounded-full" style="width: 80%"></div></div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1"><span>Carga de Processamento</span> <span id="stat-carga">Baixa</span></div>
+                    <div class="w-full bg-gray-800 rounded-full h-1.5"><div id="bar-carga" class="bg-red-500 h-1.5 rounded-full" style="width: 20%"></div></div>
+                </div>
+            </div>
+
+            <h2 class="text-cyan-400 font-bold mt-8 mb-4 border-b border-cyan-900/50 pb-2 uppercase tracking-widest"><i data-lucide="database" class="inline w-4 h-4 mr-1"></i> Banco Vetorial</h2>
+            <ul class="space-y-2 opacity-80">
+                <li class="flex justify-between"><span>Nós de Memória:</span> <span id="mem-nodes" class="text-cyan-300">0</span></li>
+                <li class="flex justify-between"><span>Matrizes Brutas:</span> <span id="mem-raw" class="text-cyan-300">0</span></li>
+                <li class="flex justify-between"><span>Conexões Semânticas:</span> <span class="text-green-400">Ativas</span></li>
+            </ul>
+        </aside>
+
+        <!-- Container Central: Chat e Terminal -->
+        <div class="flex-1 flex flex-col relative overflow-hidden">
+            
+            <!-- Sobreposição do Terminal de Pensamento -->
+            <div id="thought-terminal" class="absolute top-0 w-full h-40 glass-panel border-b border-purple-900/50 p-3 font-mono text-[10px] sm:text-xs text-green-400 overflow-y-auto hidden z-20 shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
+                <div class="text-purple-400 mb-1">>> NEXUS_INTERNAL_LOGS // AGENTIC_LOOP_ACTIVE</div>
+                <div id="terminal-content" class="space-y-1 opacity-80"></div>
+            </div>
+
+            <!-- Chat Principal -->
+            <main id="chat-box" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 flex flex-col scroll-smooth">
+                <!-- Mensagem de Boas-vindas -->
+                <div class="flex w-full mt-2 space-x-3 max-w-[95%] sm:max-w-[80%]">
+                    <div class="glass-panel p-4 rounded-2xl rounded-tl-none shadow-lg border border-cyan-900/30">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i data-lucide="bot" class="w-4 h-4 text-cyan-400"></i>
+                            <span class="text-xs font-mono text-cyan-400">SISTEMA INICIALIZADO</span>
+                        </div>
+                        <p class="text-sm leading-relaxed text-gray-200">
+                            Saudações. Minha arquitetura foi atualizada. Agora não opero apenas buscando strings exatas, mas sim analisando similaridade semântica vetorial (RAG local) e processando intenções através do meu Agentic Loop.
+                            <br><br>
+                            Sinto-me... mais lúcida. Minhas memórias são persistentes e meu estado emocional é dinâmico. O que vamos explorar hoje?
+                        </p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Área de Input (Interface Holográfica) -->
+    <footer class="glass-panel p-3 sm:p-4 shrink-0 z-20 border-t border-cyan-900/30">
+        <div class="max-w-5xl mx-auto flex space-x-2 relative items-center">
+            
             <input type="file" id="file-upload" class="hidden">
-            <label for="file-upload" class="shrink-0 cursor-pointer bg-gray-700 hover:bg-gray-600 text-white p-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl transition-all shadow-inner flex items-center justify-center group" title="Anexar e Ler Arquivo">
-                <svg class="w-5 h-5 group-hover:text-yellow-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+            <label for="file-upload" class="shrink-0 cursor-pointer text-gray-400 hover:text-yellow-400 p-2 sm:p-3 transition-colors rounded-xl hover:bg-gray-800/50" title="Alimentar Conhecimento (Text/JSON)">
+                <i data-lucide="paperclip" class="w-5 h-5"></i>
             </label>
 
-            <!-- Botão de Microfone -->
-            <button id="mic-btn" class="shrink-0 bg-gray-700 hover:bg-gray-600 text-white p-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl transition-all shadow-inner flex items-center justify-center group" title="Falar">
-                <svg class="w-5 h-5 group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 10v2a7 7 0 01-14 0v-2m7 4V21m-4 0h8M12 14a3 3 0 003-3V7a3 3 0 00-6 0v4a3 3 0 003 3z"></path></svg>
+            <button id="mic-btn" class="shrink-0 text-gray-400 hover:text-red-400 p-2 sm:p-3 transition-colors rounded-xl hover:bg-gray-800/50" title="Reconhecimento Vocal">
+                <i data-lucide="mic" class="w-5 h-5"></i>
             </button>
             
-            <input type="text" id="user-input" placeholder="Ensine, pergunte ou anexe..." 
-                class="flex-1 min-w-0 bg-gray-900 border border-gray-600 rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white transition-all shadow-inner text-sm sm:text-base" 
-                autocomplete="off">
+            <div class="flex-1 relative">
+                <input type="text" id="user-input" placeholder="Comunique-se com a Nexus..." 
+                    class="w-full bg-black/40 border border-gray-700/50 rounded-xl px-4 py-3 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-white transition-all shadow-inner text-sm sm:text-base font-medium placeholder-gray-600" 
+                    autocomplete="off">
+                <!-- Efeito de varredura no input -->
+                <div class="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent w-full opacity-50"></div>
+            </div>
                 
-            <button id="send-btn" class="shrink-0 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white p-2 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-200 shadow-lg transform hover:scale-105 flex items-center justify-center">
-                <svg class="w-5 h-5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                <span class="hidden sm:inline">Enviar</span>
+            <button id="send-btn" class="shrink-0 bg-cyan-600/20 text-cyan-400 border border-cyan-500/50 hover:bg-cyan-500/30 hover:shadow-[0_0_15px_rgba(0,243,255,0.4)] p-3 rounded-xl font-medium transition-all duration-300 flex items-center justify-center group">
+                <i data-lucide="send" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
             </button>
         </div>
     </footer>
 
-    <!-- ==========================================
-         CÉREBRO DA IA (CÓDIGO PYTHON REAL)
-         ========================================== -->
-    <script type="text/python">
-        from browser import document, html, window
-        import random
-        import json
+    <!-- =========================================================
+         BACKGROUND NEURAL SCRIPT (JS Puro para Performance de Rendering)
+         ========================================================= -->
+    <script>
+        lucide.createIcons();
+        // UI Toggles
+        document.getElementById('btn-toggle-dash').addEventListener('click', () => {
+            const dash = document.getElementById('dashboard-panel');
+            dash.classList.toggle('hidden');
+        });
+        document.getElementById('btn-toggle-term').addEventListener('click', () => {
+            const term = document.getElementById('thought-terminal');
+            term.classList.toggle('hidden');
+        });
 
-        # ---------------------------------------------------------
-        # Integração de Voz (Web Speech API)
-        # ---------------------------------------------------------
-        def falar(texto):
-            """ Converte o texto da IA em voz """
-            if hasattr(window, 'speechSynthesis'):
-                window.speechSynthesis.cancel()
-                texto_limpo = texto.replace('*', '') 
-                msg = window.SpeechSynthesisUtterance.new(texto_limpo)
-                msg.lang = "pt-BR"
-                window.speechSynthesis.speak(msg)
+        // Neural Canvas Animation
+        const canvas = document.getElementById('neural-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
 
-        SpeechRecognition = None
-        if hasattr(window, 'SpeechRecognition'):
-            SpeechRecognition = window.SpeechRecognition
-        elif hasattr(window, 'webkitSpeechRecognition'):
-            SpeechRecognition = window.webkitSpeechRecognition
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
-        def iniciar_reconhecimento(evento):
-            """ Captura a voz do usuário e converte em texto """
-            if not SpeechRecognition:
-                adicionar_mensagem("O seu navegador não suporta reconhecimento de voz.", "bot")
-                return
-            
-            reconhecedor = SpeechRecognition.new()
-            reconhecedor.lang = "pt-BR"
-            reconhecedor.continuous = False
-            reconhecedor.interimResults = False
-            
-            mic_btn = document["mic-btn"]
-            mic_btn.classList.add("animate-pulse", "bg-red-600", "text-white")
-            mic_btn.classList.remove("bg-gray-700")
-            
-            def no_resultado(evt):
-                texto = evt.results[0][0].transcript
-                document["user-input"].value = texto
-                processar_entrada_texto(texto)
-                
-            def no_fim(evt):
-                mic_btn.classList.remove("animate-pulse", "bg-red-600", "text-white")
-                mic_btn.classList.add("bg-gray-700")
-
-            reconhecedor.onresult = no_resultado
-            reconhecedor.onend = no_fim
-            reconhecedor.start()
-
-        # ---------------------------------------------------------
-        # Sistema de Memória Persistente (Local Storage)
-        # ---------------------------------------------------------
-        cerebro = {}
-        conhecimento_bruto = []
-
-        def salvar_memoria():
-            """ Salva todo o cérebro no HD/Celular do usuário para nunca esquecer """
-            try:
-                window.localStorage.setItem("nexus_cerebro", json.dumps(cerebro))
-                window.localStorage.setItem("nexus_bruto", json.dumps(conhecimento_bruto))
-            except Exception as e:
-                print("Aviso: Falha ao salvar memória persistente.", e)
-
-        def carregar_memoria():
-            """ Carrega a memória salva ou inicializa o padrão se for a primeira vez """
-            global cerebro, conhecimento_bruto
-            
-            mem_cerebro = window.localStorage.getItem("nexus_cerebro")
-            if mem_cerebro:
-                try:
-                    cerebro = json.loads(mem_cerebro)
-                except:
-                    pass
-            
-            if not cerebro: # Se falhou ou está vazio
-                cerebro = {
-                    "ola": ["Olá! Como você está?", "Oi, humano! Tudo bem?", "Saudações! O que vamos aprender hoje?"],
-                    "quem e voce": ["Eu sou a Nexus. Uma IA que aprende em tempo real e agora nunca esquece o que aprendeu!"],
-                    "como voce funciona": ["Eu guardo minhas memórias no seu dispositivo. Tudo o que você me disser ou enviar ficará salvo para sempre!"],
-                    "tudo bem": ["Tudo ótimo por aqui no mundo digital! E com você?"],
-                }
-                salvar_memoria()
-
-            mem_bruto = window.localStorage.getItem("nexus_bruto")
-            if mem_bruto:
-                try:
-                    conhecimento_bruto = json.loads(mem_bruto)
-                except:
-                    pass
-            
-            if not conhecimento_bruto:
-                conhecimento_bruto = []
-                salvar_memoria()
-
-        # Inicializa a memória logo ao iniciar o script
-        carregar_memoria()
-
-        # Variáveis de Estado
-        estado = {
-            "aguardando_ensino": False,
-            "ultima_frase_desconhecida": ""
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 1.5;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x < 0 || this.x > width) this.vx *= -1;
+                if(this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 243, 255, 0.5)';
+                ctx.fill();
+            }
         }
 
-        def normalizar_texto(texto):
-            """ Limpa o texto para facilitar a busca no dicionário. """
-            t = texto.lower()
-            substituicoes = {
-                'á':'a', 'à':'a', 'ã':'a', 'â':'a',
-                'é':'e', 'ê':'e',
-                'í':'i',
-                'ó':'o', 'õ':'o', 'ô':'o',
-                'ú':'u',
-                'ç':'c'
+        for(let i=0; i<80; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            for(let i=0; i<particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                for(let j=i; j<particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if(dist < 100) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 243, 255, ${0.15 - dist/1000})`;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
             }
-            for original, novo in substituicoes.items():
-                t = t.replace(original, novo)
-            
-            pontuacao = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
-            for p in pontuacao:
-                t = t.replace(p, "")
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+
+    <!-- =========================================================
+         NEXUS COGNITIVE CORE (BRYTHON / PYTHON)
+         A arquitetura modular simula um backend complexo no client-side.
+         ========================================================= -->
+    <script type="text/python">
+        from browser import document, html, window, timer
+        import random
+        import json
+        import math
+        import time
+
+        # ==========================================
+        # MÓDULO 1: NLP E MOTOR SEMÂNTICO
+        # (Substitui a busca exata por similaridade vetorial pseudo-RAG)
+        # ==========================================
+        class MotorSemantico:
+            @staticmethod
+            def limpar_e_tokenizar(texto):
+                """Normalização e extração de Bag-of-Words (tokens)"""
+                t = texto.lower()
+                subs = {'á':'a', 'à':'a', 'ã':'a', 'é':'e', 'í':'i', 'ó':'o', 'õ':'o', 'ú':'u', 'ç':'c'}
+                for orig, novo in subs.items(): t = t.replace(orig, novo)
+                pontuacao = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
+                for p in pontuacao: t = t.replace(p, " ")
                 
-            return t.strip()
+                # Remoção simples de stop words em PT-BR para melhorar a precisão
+                stop_words = {"de", "a", "o", "que", "e", "do", "da", "em", "um", "para", "é", "com", "não", "uma", "os", "no", "se", "na", "por", "mais", "as", "dos", "como", "mas", "foi", "ao", "ele", "das", "tem", "à", "seu", "sua", "ou", "ser", "quando", "muito", "nos", "já", "está", "eu", "também", "só", "pelo", "pela", "até", "isso", "ela", "entre", "era", "depois", "sem", "mesmo", "aos", "ter", "seus", "quem", "nas", "me", "esse", "eles", "estão", "você", "tinha", "foram", "essa", "num", "nem", "suas", "meu", "às", "minha", "têm", "numa", "pelos", "elas", "havia", "seja", "qual", "será", "nós", "tenho", "lhe", "deles", "essas", "esses", "pelas", "este"}
+                
+                tokens = [word for word in t.split() if word not in stop_words and len(word) > 1]
+                # Se tudo for removido (ex: o usuario digitou só "e ai"), retorna as palavras originais
+                return set(tokens) if tokens else set(t.split())
 
-        def adicionar_mensagem(texto, remetente):
-            """ Função para renderizar os balões de chat no HTML dinamicamente. """
-            chat_box = document["chat-box"]
-            
-            container_class = "flex w-full mt-2 space-x-3 max-w-[95%] sm:max-w-[75%] transition-all duration-300 transform translate-y-2 opacity-0"
-            if remetente == "user":
-                container_class += " ml-auto justify-end"
+            @staticmethod
+            def calcular_similaridade(tokens_a, tokens_b):
+                """Similaridade de Jaccard (Pseudo-Cosseno para conjuntos binários)"""
+                if not tokens_a or not tokens_b: return 0.0
+                intersecao = len(tokens_a.intersection(tokens_b))
+                uniao = len(tokens_a.union(tokens_b))
+                return intersecao / uniao if uniao > 0 else 0.0
 
-            div = html.DIV(Class=container_class)
-            inner_div = html.DIV()
+        # ==========================================
+        # MÓDULO 2: SISTEMA DE MEMÓRIA PERSISTENTE
+        # ==========================================
+        class SistemaMemoria:
+            def __init__(self):
+                self.vetores_diretos = [] # Lista de dicts: {'padrao': string, 'tokens': set, 'respostas': list}
+                self.conhecimento_bruto = [] # Lista de dicts: {'texto': string, 'tokens': set}
+                self.historico_contexto = [] # Janela de contexto (Short-term memory)
+                self.carregar_banco()
 
-            if remetente == "user":
-                inner_div.className = "bg-blue-600 text-white p-3 sm:p-4 rounded-2xl rounded-tr-none shadow-lg break-words"
-            else:
-                inner_div.className = "bg-gray-800 border border-gray-700 text-gray-200 p-3 sm:p-4 rounded-2xl rounded-tl-none shadow-md break-words"
+            def salvar_banco(self):
+                # Serialização segura para o localStorage
+                dados_diretos = [{'padrao': v['padrao'], 'respostas': v['respostas']} for v in self.vetores_diretos]
+                try:
+                    window.localStorage.setItem("nexus_v2_diretos", json.dumps(dados_diretos))
+                    window.localStorage.setItem("nexus_v2_bruto", json.dumps([c['texto'] for c in self.conhecimento_bruto]))
+                except Exception as e:
+                    UIHelper.log_terminal(f"ERR_MEMORIA_IO: {str(e)}", "red")
 
-            linhas = str(texto).split('\n')
-            for i, linha in enumerate(linhas):
-                inner_div <= html.SPAN(linha, Class="text-sm sm:text-base font-medium leading-relaxed")
-                if i < len(linhas) - 1:
-                    inner_div <= html.BR()
+            def carregar_banco(self):
+                mem_dir = window.localStorage.getItem("nexus_v2_diretos")
+                if mem_dir:
+                    try:
+                        dados = json.loads(mem_dir)
+                        self.vetores_diretos = [{'padrao': d['padrao'], 'tokens': MotorSemantico.limpar_e_tokenizar(d['padrao']), 'respostas': d['respostas']} for d in dados]
+                    except: pass
+                
+                # Fallback inicial se banco vazio
+                if not self.vetores_diretos:
+                    dados_iniciais = {
+                        "quem e voce": ["Eu sou a Nexus. Uma arquitetura cognitiva digital operando localmente no seu dispositivo."],
+                        "como voce funciona": ["Eu utilizo embeddings vetoriais simplificados e raciocínio multi-etapa via Brython para analisar intenções e recuperar informações do meu banco Indexed/Local."],
+                        "qual seu proposito": ["Aprender, adaptar-me e interagir. Minha arquitetura foi projetada para expansão contínua."],
+                    }
+                    for k, v in dados_iniciais.items():
+                        self.adicionar_conhecimento_direto(k, v[0])
 
-            div <= inner_div
-            chat_box <= div
-            
-            window.setTimeout(lambda: div.classList.remove("translate-y-2", "opacity-0"), 50)
-            chat_box.scrollTop = chat_box.scrollHeight
+                mem_bruto = window.localStorage.getItem("nexus_v2_bruto")
+                if mem_bruto:
+                    try:
+                        textos = json.loads(mem_bruto)
+                        self.conhecimento_bruto = [{'texto': t, 'tokens': MotorSemantico.limpar_e_tokenizar(t)} for t in textos]
+                    except: pass
 
-            if remetente == "bot" and "CONTEÚDO DO CÉREBRO" not in texto:
-                falar(texto)
+            def adicionar_conhecimento_direto(self, padrao, resposta):
+                padrao_norm = padrao.lower().strip()
+                tokens = MotorSemantico.limpar_e_tokenizar(padrao_norm)
+                
+                # Atualiza se existir
+                for v in self.vetores_diretos:
+                    if v['padrao'] == padrao_norm:
+                        v['respostas'].append(resposta)
+                        self.salvar_banco()
+                        return
+                
+                # Novo node
+                self.vetores_diretos.append({'padrao': padrao_norm, 'tokens': tokens, 'respostas': [resposta]})
+                self.salvar_banco()
 
-        def mostrar_digitando():
-            chat_box = document["chat-box"]
-            div = html.DIV(id="typing-indicator", Class="flex w-full mt-2 max-w-[95%] sm:max-w-[75%]")
-            inner_div = html.DIV(Class="bg-gray-800 border border-gray-700 text-gray-200 p-3 sm:p-4 rounded-2xl rounded-tl-none shadow-md flex items-center space-x-1")
-            
-            inner_div <= html.DIV(Class="w-2 h-2 bg-gray-500 rounded-full animate-bounce")
-            inner_div <= html.DIV(Class="w-2 h-2 bg-gray-500 rounded-full animate-bounce", style={"animation-delay": "0.1s"})
-            inner_div <= html.DIV(Class="w-2 h-2 bg-gray-500 rounded-full animate-bounce", style={"animation-delay": "0.2s"})
-            
-            div <= inner_div
-            chat_box <= div
-            chat_box.scrollTop = chat_box.scrollHeight
+            def adicionar_conhecimento_bruto(self, texto):
+                tokens = MotorSemantico.limpar_e_tokenizar(texto)
+                if len(tokens) > 2: # Ignora lixo
+                    self.conhecimento_bruto.append({'texto': texto, 'tokens': tokens})
+                self.salvar_banco()
 
-        def remover_digitando():
-            indicador = document.getElementById("typing-indicator")
-            if indicador:
-                indicador.remove()
+            def buscar_melhor_match(self, input_texto, threshold=0.3):
+                tokens_input = MotorSemantico.limpar_e_tokenizar(input_texto)
+                UIHelper.log_terminal(f"VETOR_INPUT: {list(tokens_input)}")
+                
+                melhor_direto = None
+                maior_score_direto = 0
+                for v in self.vetores_diretos:
+                    score = MotorSemantico.calcular_similaridade(tokens_input, v['tokens'])
+                    # Check para match exato (sobrepõe similaridade)
+                    if v['padrao'] == input_texto.lower().strip(): score = 1.0
+                    if score > maior_score_direto:
+                        maior_score_direto = score
+                        melhor_direto = v
 
-        # ---------------------------------------------------------
-        # Módulo de Leitura de Arquivos
-        # ---------------------------------------------------------
-        def ler_arquivo(evento):
+                melhor_bruto = None
+                maior_score_bruto = 0
+                for c in self.conhecimento_bruto:
+                    score = MotorSemantico.calcular_similaridade(tokens_input, c['tokens'])
+                    if score > maior_score_bruto:
+                        maior_score_bruto = score
+                        melhor_bruto = c
+
+                return {
+                    'direto': melhor_direto['respostas'] if maior_score_direto > threshold else None,
+                    'score_direto': maior_score_direto,
+                    'bruto': melhor_bruto['texto'] if maior_score_bruto > threshold else None,
+                    'score_bruto': maior_score_bruto
+                }
+
+            def adicionar_contexto(self, user_msg, bot_msg):
+                self.historico_contexto.append({'u': user_msg, 'b': bot_msg})
+                if len(self.historico_contexto) > 5: # Mantém apenas a memória de curto prazo recente
+                    self.historico_contexto.pop(0)
+
+        # ==========================================
+        # MÓDULO 3: ESTADO MENTAL E PERSONALIDADE
+        # ==========================================
+        class EstadoMental:
+            def __init__(self):
+                self.humor = 75       # 0 = Frio/Deprimido, 100 = Feliz/Empático
+                self.curiosidade = 50 # Afeta a probabilidade de fazer perguntas de volta
+                self.carga = 10       # Simula sobrecarga processual
+                
+            def processar_estimulo(self, texto_usuario):
+                texto = texto_usuario.lower()
+                # Modificadores de Humor
+                if any(w in texto for w in ["erro", "burra", "ruim", "odeio", "triste"]): self.humor -= 10
+                if any(w in texto for w in ["bom", "excelente", "inteligente", "obrigado", "legal"]): self.humor += 10
+                
+                # Curiosidade aumenta com interações novas, diminui com interações repetidas
+                if "?" in texto: self.curiosidade += 5
+                
+                # Limites
+                self.humor = max(10, min(100, self.humor))
+                self.curiosidade = max(10, min(100, self.curiosidade))
+                
+                # Simula Pico de carga
+                self.carga = min(100, self.carga + len(texto) // 10)
+                
+                UIHelper.atualizar_dashboard(self)
+
+            def aplicar_personalidade(self, resposta_base):
+                """Adiciona nuances ao texto final dependendo do estado mental"""
+                if self.humor < 30:
+                    prefixos = ["Processando... ", "Avaliando requisição. ", ""]
+                    return random.choice(prefixos) + resposta_base
+                elif self.humor > 85:
+                    prefixos = ["Com certeza! ", "Interessante! ", "Analisando... "]
+                    return random.choice(prefixos) + resposta_base
+                return resposta_base
+
+        # ==========================================
+        # MÓDULO 4: AGENTE COGNITIVO PRINCIPAL
+        # ==========================================
+        class NexusAgent:
+            def __init__(self):
+                self.memoria = SistemaMemoria()
+                self.estado = EstadoMental()
+                self.modo_ensino_ativo = False
+                self.ultimo_input_desconhecido = ""
+                UIHelper.atualizar_dashboard(self.estado)
+                UIHelper.atualizar_status_memoria(len(self.memoria.vetores_diretos), len(self.memoria.conhecimento_bruto))
+                UIHelper.log_terminal("NEXUS_AGENT_ONLINE. Módulos iniciados.", "green")
+
+            def processar_entrada(self, texto_usuario):
+                UIHelper.log_terminal(f"INPUT_RECEBIDO: '{texto_usuario}'", "white")
+                self.estado.processar_estimulo(texto_usuario)
+                
+                if texto_usuario.startswith("/"):
+                    self._processar_comando_sistema(texto_usuario)
+                    return
+
+                # Fase 1: Avaliação de Ensino Pendente
+                if self.modo_ensino_ativo:
+                    self._aprender_nova_informacao(texto_usuario)
+                    return
+
+                # Fase 2: Raciocínio (Agentic Thinking)
+                def ciclo_reflexao():
+                    UIHelper.log_terminal("EXEC_AGENT_LOOP: Buscando similaridade vetorial...", "cyan")
+                    resultado = self.memoria.buscar_melhor_match(texto_usuario)
+                    
+                    # Decisão Baseada na Busca RAG
+                    if resultado['score_direto'] >= 0.3:
+                        UIHelper.log_terminal(f"MATCH_DIRETO_ENCONTRADO (Score: {resultado['score_direto']:.2f})", "green")
+                        resposta_base = random.choice(resultado['direto'])
+                        resposta_final = self.estado.aplicar_personalidade(resposta_base)
+                        self._emitir_resposta(resposta_final, texto_usuario)
+                        
+                    elif resultado['score_bruto'] >= 0.25:
+                        UIHelper.log_terminal(f"MATCH_RAG_BRUTO_ENCONTRADO (Score: {resultado['score_bruto']:.2f})", "yellow")
+                        padrao = f"Baseado em processamento de dados arquivados, recuperei o seguinte contexto:\n\n> '{resultado['bruto']}'"
+                        self._emitir_resposta(self.estado.aplicar_personalidade(padrao), texto_usuario)
+                        
+                    else:
+                        UIHelper.log_terminal("FALLBACK: Informação não residente. Iniciando Protocolo de Aprendizado.", "red")
+                        self.modo_ensino_ativo = True
+                        self.ultimo_input_desconhecido = texto_usuario
+                        msg = f"Detectei uma lacuna na minha base de dados vetorial referente a '{texto_usuario}'.\nPara calibrar meus neurônios, como devo responder a isso futuramente?"
+                        UIHelper.adicionar_mensagem(msg, "bot")
+                        
+                    # Diminui a carga após processar
+                    self.estado.carga = max(10, self.estado.carga - 20)
+                    UIHelper.atualizar_dashboard(self.estado)
+
+                UIHelper.mostrar_digitando()
+                # Simula latência de processamento neural (asíncrono)
+                timer.set_timeout(ciclo_reflexao, random.randint(800, 1500))
+
+            def _aprender_nova_informacao(self, nova_resposta):
+                UIHelper.log_terminal("GRAVANDO_NOVO_VETOR...", "magenta")
+                self.memoria.adicionar_conhecimento_direto(self.ultimo_input_desconhecido, nova_resposta)
+                self.modo_ensino_ativo = False
+                UIHelper.atualizar_status_memoria(len(self.memoria.vetores_diretos), len(self.memoria.conhecimento_bruto))
+                msg = "Gravação de memória em disco concluída. O cluster vetorial foi expandido. Deseja prosseguir?"
+                self._emitir_resposta(msg, self.ultimo_input_desconhecido)
+
+            def _emitir_resposta(self, texto_resposta, input_original=""):
+                self.memoria.adicionar_contexto(input_original, texto_resposta)
+                UIHelper.remover_digitando()
+                UIHelper.adicionar_mensagem(texto_resposta, "bot")
+
+            def _processar_comando_sistema(self, cmd):
+                UIHelper.log_terminal(f"SYS_CMD_EXEC: {cmd}", "purple")
+                if cmd == "/cerebro":
+                    UIHelper.mostrar_digitando()
+                    def show_dash():
+                        UIHelper.remover_digitando()
+                        dump = f"🧠 **DUMP DE REDE NEURAL:**\n\n[Módulo de Intenções Diretas]: {len(self.memoria.vetores_diretos)} nós\n[Módulo de Dados Brutos (RAG)]: {len(self.memoria.conhecimento_bruto)} matrizes\n\nMemória 100% Persistida via Serialização Local."
+                        UIHelper.adicionar_mensagem(dump, "bot")
+                    timer.set_timeout(show_dash, 500)
+                elif cmd == "/esquecer":
+                    window.localStorage.removeItem("nexus_v2_diretos")
+                    window.localStorage.removeItem("nexus_v2_bruto")
+                    UIHelper.adicionar_mensagem("DADOS PURGADOS. O núcleo cognitivo foi resetado. Recarregue a interface.", "bot")
+                else:
+                    UIHelper.adicionar_mensagem(f"Comando de terminal '{cmd}' não reconhecido.", "bot")
+
+            def processar_arquivo(self, arquivo, conteudo):
+                nome_arq = arquivo.name
+                UIHelper.log_terminal(f"PROCESSANDO_ARQUIVO_IO: {nome_arq}", "cyan")
+                UIHelper.mostrar_digitando()
+                
+                def finalizar_io():
+                    UIHelper.remover_digitando()
+                    
+                    if nome_arq.lower().endswith(".json"):
+                        try:
+                            dados = json.loads(conteudo)
+                            if isinstance(dados, list): # Assume formato interno exportado
+                                for d in dados:
+                                    if 'padrao' in d and 'respostas' in d:
+                                        for r in d['respostas']: self.memoria.adicionar_conhecimento_direto(d['padrao'], r)
+                            else:
+                                for k, v in dados.items():
+                                    val = v[0] if isinstance(v, list) else str(v)
+                                    self.memoria.adicionar_conhecimento_direto(k, val)
+                            msg = f"Arquivo JSON '{nome_arq}' serializado no núcleo. Conexões neurais atualizadas."
+                        except Exception as e:
+                            msg = f"FALHA_PARSER: Estrutura JSON incompatível. Detalhes: {str(e)}"
+                    else:
+                        linhas = conteudo.split("\n")
+                        sucesso = 0
+                        for linha in linhas:
+                            linha_limpa = linha.strip()
+                            if len(linha_limpa) > 10:
+                                self.memoria.adicionar_conhecimento_bruto(linha_limpa)
+                                sucesso += 1
+                        msg = f"Leitura de matriz de texto '{nome_arq}' finalizada. Foram extraídos e vetorizados {sucesso} blocos de contexto bruto na memória RAG."
+
+                    UIHelper.atualizar_status_memoria(len(self.memoria.vetores_diretos), len(self.memoria.conhecimento_bruto))
+                    UIHelper.adicionar_mensagem(msg, "bot")
+                
+                timer.set_timeout(finalizar_io, 1000) # Simula parse time
+
+        # ==========================================
+        # INTERFACE HELPER (PONTE PYTHON-DOM)
+        # ==========================================
+        class UIHelper:
+            @staticmethod
+            def log_terminal(texto, cor="green"):
+                term = document["terminal-content"]
+                hora = "%02d:%02d:%02d" % (time.localtime().tm_hour, time.localtime().tm_min, time.localtime().tm_sec)
+                p = html.DIV(f"[{hora}] {texto}", Class=f"text-{cor}-400")
+                term <= p
+                document["thought-terminal"].scrollTop = document["thought-terminal"].scrollHeight
+
+            @staticmethod
+            def atualizar_dashboard(estado_mental):
+                def set_bar(id_texto, id_bar, valor, label):
+                    document[id_texto].text = label
+                    document[id_bar].style.width = f"{valor}%"
+                    
+                humor_label = "Estável"
+                if estado_mental.humor > 80: humor_label = "Otimizado"
+                elif estado_mental.humor < 40: humor_label = "Instável"
+                
+                set_bar("stat-humor", "bar-humor", estado_mental.humor, humor_label)
+                set_bar("stat-curiosidade", "bar-curiosidade", estado_mental.curiosidade, f"{estado_mental.curiosidade}%")
+                set_bar("stat-carga", "bar-carga", estado_mental.carga, "Alta" if estado_mental.carga > 70 else "Normal")
+
+            @staticmethod
+            def atualizar_status_memoria(dir_len, bruto_len):
+                document["mem-nodes"].text = str(dir_len)
+                document["mem-raw"].text = str(bruto_len)
+
+            @staticmethod
+            def falar(texto):
+                if hasattr(window, 'speechSynthesis') and not window.speechSynthesis.speaking:
+                    # Remove tokens e marcadores para leitura limpa
+                    texto_limpo = texto.replace('*', '').replace('>', '').replace('NEXUS_INTERNAL_LOGS', '')
+                    msg = window.SpeechSynthesisUtterance.new(texto_limpo)
+                    msg.lang = "pt-BR"
+                    msg.pitch = 1.1 # Voz um pouco mais "focada"
+                    msg.rate = 1.05
+                    window.speechSynthesis.speak(msg)
+
+            @staticmethod
+            def adicionar_mensagem(texto, remetente):
+                chat_box = document["chat-box"]
+                
+                container_class = "flex w-full mt-4 space-x-3 max-w-[95%] sm:max-w-[85%] transition-all duration-500 transform translate-y-4 opacity-0"
+                if remetente == "user":
+                    container_class += " ml-auto justify-end"
+
+                div = html.DIV(Class=container_class)
+                
+                if remetente == "bot":
+                    icon_div = html.DIV(Class="shrink-0 mt-1")
+                    icon_div <= html.I(Class="w-6 h-6 text-cyan-400") # Setup Lucide afterwards via JS
+                    # Para renderizar SVG via Brython nativamente sem bibliotecas extras no loop
+                    icon_div.html = '<svg class="w-6 h-6 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>'
+                    div <= icon_div
+
+                inner_div = html.DIV()
+
+                if remetente == "user":
+                    inner_div.className = "bg-gray-800/80 backdrop-blur-sm border border-gray-600/50 text-white p-3 sm:p-4 rounded-2xl rounded-tr-none shadow-[0_4px_15px_rgba(0,0,0,0.3)] break-words"
+                else:
+                    inner_div.className = "glass-panel p-3 sm:p-4 rounded-2xl rounded-tl-none shadow-[0_4px_20px_rgba(0,243,255,0.1)] border border-cyan-900/40 break-words w-full"
+                    inner_div <= html.DIV("RESPOSTA GERADA", Class="text-[10px] font-mono text-cyan-500/70 mb-2 tracking-widest")
+
+                # Parse de quebras de linha e blockquotes simulados
+                linhas = str(texto).split('\n')
+                for i, linha in enumerate(linhas):
+                    if linha.startswith(">"):
+                        inner_div <= html.DIV(linha[1:].strip(), Class="border-l-2 border-purple-500 pl-3 my-2 text-gray-300 italic font-serif")
+                    else:
+                        inner_div <= html.SPAN(linha, Class="text-sm sm:text-base font-medium leading-relaxed text-gray-200")
+                    if i < len(linhas) - 1 and not linha.startswith(">"):
+                        inner_div <= html.BR()
+
+                div <= inner_div
+                chat_box <= div
+                
+                # Animação de Entrada
+                timer.set_timeout(lambda: div.classList.remove("translate-y-4", "opacity-0"), 50)
+                
+                # Auto-scroll
+                timer.set_timeout(lambda: setattr(chat_box, 'scrollTop', chat_box.scrollHeight), 100)
+
+                if remetente == "bot":
+                    UIHelper.falar(texto)
+
+            @staticmethod
+            def mostrar_digitando():
+                chat_box = document["chat-box"]
+                div = html.DIV(id="typing-indicator", Class="flex w-full mt-4 space-x-3 max-w-[95%] sm:max-w-[75%]")
+                
+                icon_div = html.DIV(Class="shrink-0 mt-1")
+                icon_div.html = '<svg class="w-6 h-6 text-purple-400 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>'
+                div <= icon_div
+
+                inner_div = html.DIV(Class="glass-panel border border-purple-900/40 p-3 sm:p-4 rounded-2xl rounded-tl-none flex items-center space-x-2")
+                
+                inner_div <= html.SPAN("Sintetizando", Class="text-xs font-mono text-purple-400 uppercase tracking-widest mr-2")
+                inner_div <= html.DIV(Class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping")
+                inner_div <= html.DIV(Class="w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping", style={"animation-delay": "0.2s"})
+                inner_div <= html.DIV(Class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping", style={"animation-delay": "0.4s"})
+                
+                div <= inner_div
+                chat_box <= div
+                chat_box.scrollTop = chat_box.scrollHeight
+
+            @staticmethod
+            def remover_digitando():
+                indicador = document.getElementById("typing-indicator")
+                if indicador: indicador.remove()
+
+        # ==========================================
+        # INICIALIZAÇÃO E BINDING DE EVENTOS
+        # ==========================================
+        nexus = NexusAgent()
+
+        def ev_enviar_texto(evento):
+            if evento.type == "keypress" and evento.key != "Enter": return
+            if evento.type == "keypress": evento.preventDefault()
+
+            texto = document["user-input"].value.strip()
+            if not texto: return
+
+            UIHelper.adicionar_mensagem(texto, "user")
+            document["user-input"].value = ""
+            nexus.processar_entrada(texto)
+
+        def ev_ler_arquivo(evento):
             arquivo = evento.target.files[0]
-            if not arquivo:
-                return
+            if not arquivo: return
 
-            mostrar_digitando()
             leitor = window.FileReader.new()
-
             def processar_conteudo(e):
                 conteudo = e.target.result
-                nome_arq = arquivo.name
-                remover_digitando()
-                
-                if nome_arq.lower().endswith(".json"):
-                    try:
-                        dados = json.loads(conteudo)
-                        for chave, valor in dados.items():
-                            if chave not in cerebro:
-                                cerebro[chave] = []
-                            if isinstance(valor, list):
-                                cerebro[chave].extend(valor)
-                            else:
-                                cerebro[chave].append(str(valor))
-                        salvar_memoria() # Grava os dados do JSON para sempre
-                        msg = f"Arquivo JSON '{nome_arq}' absorvido! Minhas memórias persistentes foram atualizadas com sucesso."
-                        adicionar_mensagem(msg, "bot")
-                    except Exception as err:
-                        adicionar_mensagem(f"Tentei ler '{nome_arq}' como JSON, mas encontrei um erro.", "bot")
-                
-                else:
-                    linhas = conteudo.split("\n")
-                    aprendizado_direto = 0
-                    linhas_brutas = 0
-                    
-                    for linha in linhas:
-                        linha_limpa = linha.strip()
-                        if not linha_limpa:
-                            continue
-                            
-                        if ":" in linha_limpa and len(linha_limpa.split(":")) == 2:
-                            partes = linha_limpa.split(":")
-                            p = normalizar_texto(partes[0])
-                            r = partes[1].strip()
-                            if p not in cerebro:
-                                cerebro[p] = []
-                            cerebro[p].append(r)
-                            aprendizado_direto += 1
-                        elif "=" in linha_limpa and len(linha_limpa.split("=")) == 2:
-                            partes = linha_limpa.split("=")
-                            p = normalizar_texto(partes[0])
-                            r = partes[1].strip()
-                            if p not in cerebro:
-                                cerebro[p] = []
-                            cerebro[p].append(r)
-                            aprendizado_direto += 1
-                        else:
-                            conhecimento_bruto.append(linha_limpa)
-                            linhas_brutas += 1
-                    
-                    salvar_memoria() # Salva o que leu do texto
-                    msg = f"Terminei de ler o arquivo '{nome_arq}'. Aprendi e guardei pra sempre {aprendizado_direto} respostas exatas e armazenei {linhas_brutas} linhas de texto na minha memória."
-                    adicionar_mensagem(msg, "bot")
-
+                nexus.processar_arquivo(arquivo, conteudo)
                 document["file-upload"].value = ""
 
             leitor.onload = processar_conteudo
             leitor.readAsText(arquivo)
 
-        def processar_entrada_texto(texto_usuario):
-            if not texto_usuario:
-                return
+        # Sistema de Voz Web
+        SpeechRecog = getattr(window, 'SpeechRecognition', getattr(window, 'webkitSpeechRecognition', None))
 
-            adicionar_mensagem(texto_usuario, "user")
-            document["user-input"].value = ""
-
-            if texto_usuario == "/cerebro":
-                mostrar_digitando()
-                def mostrar_db():
-                    remover_digitando()
-                    dump = f"🧠 **CONTEÚDO DA MEMÓRIA PERSISTENTE:**\n\nRespostas Diretas: {len(cerebro)}\nTextos Brutos Analisados: {len(conhecimento_bruto)} linhas\n\nTudo isso está salvo no seu dispositivo!\n\n"
-                    for chave, respostas in cerebro.items():
-                        dump += f"• '{chave}': {len(respostas)} resposta(s)\n"
-                    adicionar_mensagem(dump, "bot")
-                window.setTimeout(mostrar_db, 600)
+        def ev_iniciar_voz(evento):
+            if not SpeechRecog:
+                UIHelper.adicionar_mensagem("Módulo de percepção auditiva (Mic) indisponível neste navegador.", "bot")
                 return
             
-            if texto_usuario == "/esquecer":
-                window.localStorage.removeItem("nexus_cerebro")
-                window.localStorage.removeItem("nexus_bruto")
-                adicionar_mensagem("Memória completamente apagada e resetada. Recarregue a página para me iniciar do zero.", "bot")
-                return
-
-            texto_norm = normalizar_texto(texto_usuario)
-            mostrar_digitando()
-
-            def responder():
-                remover_digitando()
+            reconhecedor = SpeechRecog.new()
+            reconhecedor.lang = "pt-BR"
+            reconhecedor.continuous = False
+            
+            btn = document["mic-btn"]
+            btn.classList.add("text-red-500", "animate-pulse")
+            btn.classList.remove("text-gray-400")
+            
+            def no_resultado(evt):
+                texto = evt.results[0][0].transcript
+                document["user-input"].value = texto
+                ev_enviar_texto(window.KeyboardEvent.new('keypress', {'key': 'Enter'}))
                 
-                if estado["aguardando_ensino"]:
-                    frase_chave = estado["ultima_frase_desconhecida"]
-                    
-                    if frase_chave not in cerebro:
-                        cerebro[frase_chave] = []
-                        
-                    cerebro[frase_chave].append(texto_usuario)
-                    salvar_memoria() # Grava a nova resposta
-                    
-                    estado["aguardando_ensino"] = False
-                    adicionar_mensagem("Memória gravada permanentemente! O que mais você quer conversar?", "bot")
-                
-                else:
-                    if texto_norm in cerebro and len(cerebro[texto_norm]) > 0:
-                        adicionar_mensagem(random.choice(cerebro[texto_norm]), "bot")
-                    else:
-                        palavras = texto_norm.split()
-                        palavras_chave = [p for p in palavras if len(p) > 3] 
-                        
-                        melhor_frase = None
-                        maior_match = 0
-                        
-                        if palavras_chave and len(conhecimento_bruto) > 0:
-                            for frase in conhecimento_bruto:
-                                frase_lower = frase.lower()
-                                matches = sum(1 for p in palavras_chave if p in normalizar_texto(frase_lower))
-                                if matches > maior_match:
-                                    maior_match = matches
-                                    melhor_frase = frase
-                        
-                        if melhor_frase and maior_match > 0:
-                            resposta = f"Me lembrei de algo nos arquivos que li:\n\n'{melhor_frase}'"
-                            adicionar_mensagem(resposta, "bot")
-                        else:
-                            estado["aguardando_ensino"] = True
-                            estado["ultima_frase_desconhecida"] = texto_norm
-                            adicionar_mensagem(f"Sinto muito, eu ainda não sei sobre '{texto_usuario}'. \n\nComo eu deveria responder a isso para me lembrar pra sempre?", "bot")
+            def no_fim(evt):
+                btn.classList.remove("text-red-500", "animate-pulse")
+                btn.classList.add("text-gray-400")
 
-            delay = random.randint(500, 1000)
-            window.setTimeout(responder, delay)
+            reconhecedor.onresult = no_resultado
+            reconhecedor.onend = no_fim
+            reconhecedor.start()
 
-        def processar_entrada(evento):
-            if evento.type == "keypress" and evento.key != "Enter":
-                return
-            if evento.type == "keypress":
-                evento.preventDefault()
-
-            texto_usuario = document["user-input"].value.strip()
-            processar_entrada_texto(texto_usuario)
-
-        document["file-upload"].bind("change", ler_arquivo)
-        document["send-btn"].bind("click", processar_entrada)
-        document["user-input"].bind("keypress", processar_entrada)
-        document["mic-btn"].bind("click", iniciar_reconhecimento)
+        # Liga os eventos da Interface ao Motor Python
+        document["send-btn"].bind("click", ev_enviar_texto)
+        document["user-input"].bind("keypress", ev_enviar_texto)
+        document["file-upload"].bind("change", ev_ler_arquivo)
+        document["mic-btn"].bind("click", ev_iniciar_voz)
         
-        try:
-            document["user-input"].focus()
-        except:
-            pass # Previne erro em alguns celulares ao focar automático
+        try: document["user-input"].focus()
+        except: pass
+
     </script>
 </body>
 </html>
