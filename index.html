@@ -56,7 +56,7 @@
             </div>
             <div>
                 <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 tracking-wider">
-                    NEXUS.CORE <span class="text-[10px] text-cyan-500 font-mono align-top opacity-80 border border-cyan-500/30 px-1 rounded">v5.0_ENGINEERING</span>
+                    NEXUS.CORE <span class="text-[10px] text-cyan-500 font-mono align-top opacity-80 border border-cyan-500/30 px-1 rounded">v6.0_HYBRID_WEB</span>
                 </h1>
             </div>
         </div>
@@ -121,12 +121,16 @@
                     <div class="glass-panel p-5 rounded-2xl rounded-tl-none shadow-lg pulse-border">
                         <div class="flex items-center space-x-2 mb-3">
                             <i data-lucide="network" class="w-5 h-5 text-purple-400"></i>
-                            <span class="text-[11px] font-mono text-purple-400 tracking-widest">SISTEMA INICIALIZADO</span>
+                            <span class="text-[11px] font-mono text-purple-400 tracking-widest">SISTEMA INICIALIZADO - HÍBRIDO WEB</span>
                         </div>
                         <p class="text-sm leading-relaxed text-gray-200">
-                            Rotinas de Engenharia de Software aplicadas. Memória e roteamento de intenção ativos.
+                            Integração Cognitiva concluída. Modificações aplicadas com sucesso.
                             <br><br>
-                            Aguardando comandos, instruções de sistema (ex: "suas regras são..."), dados fatuais ou conversação padrão.
+                            <span class="text-cyan-300">Atualizações de Engenharia:</span><br>
+                            • Camada de rede HTTP ativa: Sou capaz de buscar fatos na internet em tempo real.<br>
+                            • Autodidatismo forçado: Toda informação declarativa útil fornecida por você será automaticamente absorvida e gravada na minha base RAG sem perguntas.<br>
+                            <br>
+                            Sistemas Prontos. Faça uma pesquisa na web ("o que é...") ou ensine-me algo novo.
                         </p>
                     </div>
                 </div>
@@ -226,7 +230,7 @@
          Refatoração focada em Engenharia de Software Pura
          ========================================================= -->
     <script type="text/python">
-        from browser import document, html, window, timer
+        from browser import document, html, window, timer, ajax
         import json, time, re
         import difflib
 
@@ -253,26 +257,38 @@
                 }
 
                 self.pendente_aprendizado = None
+                self.usou_voz = False 
+                
                 self.carregar_memoria()
                 UIHelper.sincronizar_interface(self.nexus_core, self.memoria)
-                UIHelper.log("Sistema montado e pronto para roteamento.", "cyan")
+                UIHelper.log("Sistema montado e pronto para roteamento (Híbrido Web/Local).", "cyan")
 
             # ==========================================
             # PERSISTÊNCIA (REQUISITO 3)
             # ==========================================
             def carregar_memoria(self):
                 try:
-                    m = window.localStorage.getItem("nexus_mem_v5")
-                    c = window.localStorage.getItem("nexus_core_v5")
+                    m = window.localStorage.getItem("nexus_mem_v6")
+                    c = window.localStorage.getItem("nexus_core_v6")
                     if m: self.memoria = json.loads(m)
                     if c: self.nexus_core = json.loads(c)
                 except Exception as e:
                     UIHelper.log(f"Aviso de carregamento: {e}", "red")
 
+                if not self.memoria["longo_prazo"]:
+                    self.memoria["longo_prazo"] = {
+                        "ola": "Olá! Meus sistemas estão prontos. Como posso ajudar?",
+                        "olá": "Olá! Meus sistemas estão prontos. Como posso ajudar?",
+                        "oi": "Oi! Tudo operando perfeitamente. O que vamos fazer hoje?",
+                        "quem é você": "Eu sou a Nexus. Uma arquitetura cognitiva autônoma operando no seu navegador.",
+                        "tudo bem": "Todos os meus processos estão estáveis. E como você está?"
+                    }
+                    self.salvar_memoria()
+
             def salvar_memoria(self):
                 try:
-                    window.localStorage.setItem("nexus_mem_v5", json.dumps(self.memoria))
-                    window.localStorage.setItem("nexus_core_v5", json.dumps(self.nexus_core))
+                    window.localStorage.setItem("nexus_mem_v6", json.dumps(self.memoria))
+                    window.localStorage.setItem("nexus_core_v6", json.dumps(self.nexus_core))
                     UIHelper.sincronizar_interface(self.nexus_core, self.memoria)
                 except Exception as e:
                     UIHelper.log(f"Aviso de salvamento: {e}", "red")
@@ -303,20 +319,87 @@
                 return "CONVERSA"
 
             # ==========================================
+            # INTERNET LAYER: Busca HTTP em Tempo Real
+            # ==========================================
+            def precisa_internet(self, texto):
+                t = texto.lower().strip()
+                padroes = [
+                    r"^o que [ée] (?:um |uma |o |a )?(.*)",
+                    r"^quem [ée] (.*)",
+                    r"^quem foi (.*)",
+                    r"^quando foi (.*)",
+                    r"^defini[çc][ãa]o de (.*)",
+                    r"^o que significa (.*)"
+                ]
+                for p in padroes:
+                    match = re.search(p, t)
+                    if match:
+                        termo = match.group(1).replace("?", "").strip()
+                        if termo: return termo
+                return None
+
+            def buscar_internet(self, termo, texto_original):
+                UIHelper.mostrar_digitando("Pesquisando na rede global (Wikipedia API)...")
+                
+                # Fetch data without blocking using ajax callback
+                url = f"https://pt.wikipedia.org/api/rest_v1/page/summary/{window.encodeURIComponent(termo)}"
+                
+                def on_complete(req):
+                    if req.status in [200, 201]:
+                        try:
+                            dados = json.loads(req.text)
+                            self.resumir_resposta_online(dados, termo, texto_original)
+                        except Exception as e:
+                            UIHelper.log(f"Erro Parse JSON: {e}", "red")
+                            self.fallback_pesquisa(texto_original)
+                    else:
+                        UIHelper.log(f"Erro Web API: HTTP {req.status}", "red")
+                        self.fallback_pesquisa(texto_original)
+                        
+                ajax.get(url, oncomplete=on_complete)
+
+            def resumir_resposta_online(self, dados, termo, texto_original):
+                if "extract" in dados and dados["extract"]:
+                    resumo = dados["extract"]
+                    
+                    # Salva imediatamente na memoria (Autodidatismo RAG)
+                    fato = f"Conhecimento Web ({termo}): {resumo}"
+                    self.memoria["conhecimento"].append(fato)
+                    self.salvar_memoria()
+                    
+                    UIHelper.log(f"Busca Web Concluída. Fato adicionado ao BD permanente.", "green")
+                    
+                    resposta = f"[PESQUISA EM TEMPO REAL] Localizei a informação online e já consolidei na minha matriz de memória base:\n\n'{resumo}'"
+                    self.emitir_resposta(resposta, texto_original)
+                else:
+                    self.fallback_pesquisa(texto_original)
+
+            def fallback_pesquisa(self, texto_original):
+                UIHelper.log("Busca Web falhou ou sem dados. Fallback para busca semântica local.", "yellow")
+                self.responder_conversa(texto_original)
+
+            # ==========================================
             # 2. MOTOR CENTRAL DE FLUXO (ROUTER ÚNICO)
             # ==========================================
             def processar_entrada(self, texto):
-                UIHelper.mostrar_digitando()
+                UIHelper.mostrar_digitando("Analisando Entrada")
                 
                 def executar_roteamento():
                     if self.pendente_aprendizado:
                         self.aprender(self.pendente_aprendizado, texto)
                         return
 
-                    intencao = self.classificar_entrada(texto)
-                    UIHelper.log(f"Intenção Mapeada: {intencao}", "yellow")
+                    # Nova camada: Detectar necessidade de buscar na internet
+                    termo_busca = self.precisa_internet(texto)
+                    if termo_busca:
+                        UIHelper.log(f"Necessidade de Rede Detectada. Fato: {termo_busca}", "blue")
+                        self.buscar_internet(termo_busca, texto)
+                        return # A resposta será gerenciada assincronamente pela função de rede
 
-                    # Dispatcher de ações baseado em intenção
+                    # Se não foi pra rede, segue fluxo de classificação interna
+                    intencao = self.classificar_entrada(texto)
+                    UIHelper.log(f"Intenção Local Mapeada: {intencao}", "yellow")
+
                     if intencao == "COMANDO":
                         self.executar_comando(texto)
                     elif intencao == "SISTEMA":
@@ -330,7 +413,6 @@
                     else:
                         self.responder_conversa(texto)
 
-                # Simula latência de processamento de forma limpa, não blocante
                 timer.set_timeout(executar_roteamento, 500)
 
             # ==========================================
@@ -347,40 +429,45 @@
                 self.emitir_resposta(f"[SISTEMA ATUALIZADO] Nova diretriz de personalidade configurada: '{nova_regra}'.", texto)
 
             # ==========================================
-            # 6. BUSCA SEMÂNTICA SIMPLES & CONVERSA
+            # 6. BUSCA SEMÂNTICA SIMPLES & AUTODIDATISMO
             # ==========================================
             def responder_conversa(self, texto):
                 t_norm = texto.lower().strip()
                 melhor_resposta = None
                 maior_score = 0.0
 
-                # A. Busca na Memória de Longo Prazo
                 for chave_pergunta, valor_resposta in self.memoria["longo_prazo"].items():
                     score = difflib.SequenceMatcher(None, t_norm, chave_pergunta).ratio()
                     if score > maior_score:
                         maior_score = score
                         melhor_resposta = valor_resposta
 
-                # B. Busca em Conhecimento Bruto / Fatos
                 for doc in self.memoria["conhecimento"]:
                     score = difflib.SequenceMatcher(None, t_norm, doc.lower()).ratio()
                     if score > maior_score and score > 0.4:
                         maior_score = score
-                        melhor_resposta = f"[RECUPERADO DOS ARQUIVOS]: '{doc}'"
+                        melhor_resposta = f"[RECUPERADO DOS ARQUIVOS LOCAIS]: '{doc}'"
 
-                UIHelper.log(f"Similaridade Semântica (SequenceMatcher): {maior_score:.2f}", "green")
+                UIHelper.log(f"Similaridade Semântica Local: {maior_score:.2f}", "green")
 
-                # C. Tomada de Decisão com base no Score
                 if maior_score > 0.55:
                     self.emitir_resposta(melhor_resposta, texto)
                 else:
-                    # 5. SISTEMA DE APRENDIZADO REAL
-                    self.pendente_aprendizado = t_norm
-                    self.salvar_memoria()
-                    self.emitir_resposta(f"[FALHA DE RECUPERAÇÃO] Não tenho dados para responder '{texto}' (Score: {maior_score:.2f}). Qual deve ser a resposta correta para que eu grave na memória?", texto)
+                    # COMPORTAMENTO AUTODIDATA OBRIGATÓRIO
+                    # Se não sabe a resposta, mas o input foi uma afirmação (sem '?' e com contexto mínimo)
+                    if "?" not in t_norm and len(t_norm) > 10:
+                        self.memoria["conhecimento"].append(texto)
+                        self.salvar_memoria()
+                        UIHelper.log("Auto-aprendizado engatilhado. Dado gravado em disco silênciosamente.", "magenta")
+                        self.emitir_resposta(f"[AUTO-APRENDIZADO] Interpretei isso como um fato novo. Já o consolidei e gravei na minha matriz de conhecimento.", texto)
+                    else:
+                        # Se for de fato uma pergunta explícita pedindo algo novo, ativa treinamento manual.
+                        self.pendente_aprendizado = t_norm
+                        self.salvar_memoria()
+                        self.emitir_resposta(f"[FALHA DE RECUPERAÇÃO E REDE] Não tenho dados sobre '{texto}' (Score: {maior_score:.2f}). Qual deve ser a resposta correta para que eu grave e nunca mais esqueça?", texto)
 
             # ==========================================
-            # 5. APRENDIZADO (Gravação)
+            # 5. APRENDIZADO MANUAL (Gravação)
             # ==========================================
             def aprender(self, pergunta_chave, resposta_usuario):
                 self.memoria["longo_prazo"][pergunta_chave] = resposta_usuario
@@ -417,9 +504,9 @@
 
             def executar_comando(self, comando):
                 if comando == "/esquecer":
-                    window.localStorage.removeItem("nexus_mem_v5")
-                    window.localStorage.removeItem("nexus_core_v5")
-                    self.emitir_resposta("[SISTEMA LIMPO] Estruturas de memória apagadas. Necessário reload na página.", comando)
+                    window.localStorage.removeItem("nexus_mem_v6")
+                    window.localStorage.removeItem("nexus_core_v6")
+                    self.emitir_resposta("[SISTEMA LIMPO] Estruturas apagadas. Necessário reload na página.", comando)
                 else:
                     self.emitir_resposta(f"[ERRO] Comando de terminal '{comando}' não suportado.", comando)
 
@@ -434,7 +521,9 @@
                 
                 self.salvar_memoria()
                 UIHelper.remover_digitando()
-                UIHelper.adicionar_mensagem(resposta, "bot")
+                
+                UIHelper.adicionar_mensagem(resposta, "bot", falar=self.usou_voz)
+                self.usou_voz = False 
 
         # ==========================================
         # ABSTRAÇÃO DE UI (SEPARAÇÃO DE RESPONSABILIDADES)
@@ -479,7 +568,7 @@
                     window.speechSynthesis.speak(msg)
 
             @staticmethod
-            def adicionar_mensagem(texto, remetente):
+            def adicionar_mensagem(texto, remetente, falar=False):
                 box = document["chat-box"]
                 ct_class = "flex w-full mt-5 space-x-3 max-w-[95%] sm:max-w-[85%] transition-all duration-300"
                 if remetente == "user": ct_class += " ml-auto justify-end"
@@ -500,7 +589,6 @@
                 linhas = str(texto).split('\n')
                 for i, l in enumerate(linhas):
                     if l.startswith("[") and "]" in l:
-                        # Extrai a tag de log para estilização visual
                         partes = l.split("]", 1)
                         tag = partes[0] + "]"
                         rest = partes[1]
@@ -514,18 +602,25 @@
                 div <= inner
                 box <= div
                 box.scrollTop = box.scrollHeight
-                if remetente == "bot": UIHelper.falar(texto)
+                
+                if remetente == "bot" and falar: 
+                    UIHelper.falar(texto)
 
             @staticmethod
-            def mostrar_digitando():
+            def mostrar_digitando(texto_status="Roteando"):
                 box = document["chat-box"]
+                UIHelper.remover_digitando()
+                
                 div = html.DIV(id="typing-indicator", Class="flex w-full mt-4 space-x-3 max-w-[95%] sm:max-w-[75%]")
                 icon = html.DIV(Class="shrink-0 mt-2")
                 icon.html = '<svg class="w-6 h-6 text-purple-400 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>'
                 div <= icon
 
                 inner = html.DIV(Class="glass-panel border border-purple-900/30 p-3 rounded-2xl rounded-tl-none flex items-center space-x-2")
-                inner <= html.SPAN("Roteando", Class="text-[10px] font-mono text-purple-400/80 uppercase tracking-widest mr-2")
+                inner <= html.SPAN(texto_status, Class="text-[10px] font-mono text-purple-400/80 uppercase tracking-widest mr-2")
+                inner <= html.DIV(Class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping")
+                inner <= html.DIV(Class="w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping", style={"animation-delay": "0.2s"})
+                
                 div <= inner; box <= div; box.scrollTop = box.scrollHeight
 
             @staticmethod
@@ -543,8 +638,11 @@
             if e.type == "keypress": e.preventDefault()
             txt = document["user-input"].value.strip()
             if not txt: return
+            
             UIHelper.adicionar_mensagem(txt, "user")
             document["user-input"].value = ""
+            
+            nexus_app.usou_voz = False
             nexus_app.processar_entrada(txt)
 
         def ev_arquivo(e):
@@ -552,6 +650,7 @@
             if not arq: return
             leitor = window.FileReader.new()
             def finaliza(evt):
+                nexus_app.usou_voz = False
                 nexus_app.processar_entrada(evt.target.result)
                 document["file-upload"].value = ""
             leitor.onload = finaliza
@@ -566,8 +665,15 @@
             btn.classList.add("text-red-500", "animate-pulse"); btn.classList.remove("text-gray-400")
             
             def no_res(evt):
-                document["user-input"].value = evt.results[0][0].transcript
-                ev_enviar(window.KeyboardEvent.new('keypress', {'key': 'Enter'}))
+                txt = evt.results[0][0].transcript
+                document["user-input"].value = txt
+                
+                UIHelper.adicionar_mensagem(txt, "user")
+                document["user-input"].value = ""
+                
+                nexus_app.usou_voz = True
+                nexus_app.processar_entrada(txt)
+                
             def no_fim(evt):
                 btn.classList.remove("text-red-500", "animate-pulse"); btn.classList.add("text-gray-400")
             
