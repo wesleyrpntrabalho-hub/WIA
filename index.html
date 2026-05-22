@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus - Explorador Cognitivo v5</title>
+    <title>Nexus - Agente de Aprendizado Contínuo</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -56,7 +56,7 @@
             </div>
             <div>
                 <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 tracking-wider">
-                    NEXUS.CORE <span class="text-[10px] text-cyan-500 font-mono align-top opacity-80 border border-cyan-500/30 px-1 rounded">v5.0_EXPLORER</span>
+                    NEXUS.CORE <span class="text-[10px] text-cyan-500 font-mono align-top opacity-80 border border-cyan-500/30 px-1 rounded">v7.0_LEARNING_AGENT</span>
                 </h1>
             </div>
         </div>
@@ -70,36 +70,39 @@
         
         <!-- Dashboard Lateral (Núcleo Cognitivo, Memória e Explorador) -->
         <aside id="dashboard-panel" class="hidden sm:flex flex-col w-72 glass-panel border-r border-blue-900/30 p-4 overflow-y-auto font-mono text-[11px] text-gray-300 transition-all duration-300">
-            <h2 class="text-cyan-400 font-bold mb-3 border-b border-cyan-900/50 pb-2 uppercase tracking-widest flex items-center"><i data-lucide="brain" class="w-4 h-4 mr-2"></i> Núcleo (Core)</h2>
+            <h2 class="text-cyan-400 font-bold mb-3 border-b border-cyan-900/50 pb-2 uppercase tracking-widest flex items-center"><i data-lucide="brain" class="w-4 h-4 mr-2"></i> Núcleo Cognitivo</h2>
             
             <div class="space-y-3 mb-6">
-                <div><span class="text-gray-500">IDENTIDADE:</span> <span id="ui-nome" class="text-purple-300 font-semibold">NEXUS v5</span></div>
-                <div><span class="text-gray-500">MODO_ATUAL:</span> <span id="ui-modo" class="text-green-400">EXPLORADOR</span></div>
+                <div><span class="text-gray-500">IDENTIDADE:</span> <span id="ui-nome" class="text-purple-300 font-semibold">NEXUS v7</span></div>
+                <div><span class="text-gray-500">ESTADO_IO:</span> <span id="ui-modo" class="text-green-400">OCIOSO/PRONTO</span></div>
                 
                 <div class="mt-4">
                     <div class="flex justify-between mb-1"><span>Foco Analítico</span> <span id="stat-foco">70%</span></div>
                     <div class="w-full bg-gray-900 rounded-full h-1"><div id="bar-foco" class="bg-blue-500 h-1 rounded-full transition-all duration-500" style="width: 70%"></div></div>
                 </div>
                 <div>
-                    <div class="flex justify-between mb-1"><span>Curiosidade</span> <span id="stat-curiosidade">80%</span></div>
+                    <div class="flex justify-between mb-1"><span>Curiosidade Adaptativa</span> <span id="stat-curiosidade">80%</span></div>
                     <div class="w-full bg-gray-900 rounded-full h-1"><div id="bar-curiosidade" class="bg-yellow-500 h-1 rounded-full transition-all duration-500" style="width: 80%"></div></div>
                 </div>
             </div>
 
             <!-- Módulo Explorador -->
-            <h2 class="text-yellow-400 font-bold mb-2 border-b border-yellow-900/50 pb-2 uppercase tracking-widest flex items-center"><i data-lucide="compass" class="w-4 h-4 mr-2"></i> Módulo Explorador</h2>
+            <div class="flex justify-between items-center mb-2 border-b border-yellow-900/50 pb-2">
+                <h2 class="text-yellow-400 font-bold uppercase tracking-widest flex items-center"><i data-lucide="compass" class="w-4 h-4 mr-2"></i> Loop de Estudo</h2>
+                <button id="btn-toggle-exp" class="text-[9px] bg-yellow-900/40 hover:bg-yellow-700/50 text-yellow-300 px-2 py-1 rounded transition-colors border border-yellow-700/50">PAUSAR</button>
+            </div>
             <div class="text-[10px] text-gray-400 space-y-1 pl-2 border-l border-yellow-500/50 mb-6">
-                <div class="flex justify-between"><span>Status:</span> <span id="exp-status" class="text-green-400 animate-pulse">ATIVO</span></div>
-                <div class="flex justify-between"><span>Lendo:</span> <span id="exp-lendo" class="text-cyan-300 truncate w-32 text-right">Iniciando...</span></div>
-                <div class="flex justify-between"><span>Fila (Nós de Grafo):</span> <span id="exp-fila" class="text-purple-300">5</span></div>
+                <div class="flex justify-between"><span>Status:</span> <span id="exp-status" class="text-green-400 animate-pulse">AGUARDANDO</span></div>
+                <div class="flex justify-between"><span>Alvo Lacuna:</span> <span id="exp-lendo" class="text-cyan-300 truncate w-28 text-right">Iniciando...</span></div>
+                <div class="flex justify-between"><span>Fila Neural:</span> <span id="exp-fila" class="text-purple-300">5</span></div>
             </div>
 
-            <h2 class="text-cyan-400 font-bold mb-3 border-b border-cyan-900/50 pb-2 uppercase tracking-widest flex items-center"><i data-lucide="database" class="w-4 h-4 mr-2"></i> Banco de Dados</h2>
+            <h2 class="text-cyan-400 font-bold mb-3 border-b border-cyan-900/50 pb-2 uppercase tracking-widest flex items-center"><i data-lucide="database" class="w-4 h-4 mr-2"></i> Memória Estruturada</h2>
             <ul class="space-y-2 opacity-90 mb-6">
-                <li class="flex justify-between"><span>Curto Prazo:</span> <span id="mem-curto" class="text-cyan-300">0</span></li>
-                <li class="flex justify-between"><span>Longo Prazo (Dict):</span> <span id="mem-longo" class="text-purple-300">0</span></li>
-                <li class="flex justify-between"><span>Conhecimento (RAG):</span> <span id="mem-conhecimento" class="text-green-300">0</span></li>
-                <li class="flex justify-between"><span>Contexto Ativo:</span> <span id="mem-contexto" class="text-yellow-300">0</span></li>
+                <li class="flex justify-between"><span>Conceitos Dominados:</span> <span id="mem-conceitos" class="text-blue-300 font-bold">0</span></li>
+                <li class="flex justify-between"><span>Grafo (Arestas):</span> <span id="mem-conexoes" class="text-yellow-300">0</span></li>
+                <li class="flex justify-between"><span>Vetor Bruto (RAG):</span> <span id="mem-conhecimento" class="text-green-300">0</span></li>
+                <li class="flex justify-between"><span>Mem. Associativa:</span> <span id="mem-longo" class="text-purple-300">0</span></li>
             </ul>
         </aside>
 
@@ -109,7 +112,7 @@
             <!-- Terminal de Raciocínio Simulado (Logs Reais de Decisão) -->
             <div id="thought-terminal" class="absolute top-0 w-full h-48 glass-panel border-b border-purple-900/60 p-3 font-mono text-[10px] sm:text-xs text-green-400 overflow-y-auto hidden z-20 shadow-[0_15px_30px_rgba(0,0,0,0.9)] backdrop-blur-xl">
                 <div class="text-purple-400 mb-2 border-b border-purple-900/50 pb-1 flex justify-between">
-                    <span>>> NEXUS_SYSTEM_TRACE // BACKGROUND_PROCESSES</span>
+                    <span>>> NEXUS_SYSTEM_TRACE // LEARNING_PIPELINE</span>
                     <span class="text-gray-500 animate-pulse">REC</span>
                 </div>
                 <div id="terminal-content" class="space-y-1.5 opacity-90"></div>
@@ -121,14 +124,15 @@
                     <div class="glass-panel p-5 rounded-2xl rounded-tl-none shadow-lg pulse-border">
                         <div class="flex items-center space-x-2 mb-3">
                             <i data-lucide="network" class="w-5 h-5 text-purple-400"></i>
-                            <span class="text-[11px] font-mono text-purple-400 tracking-widest">NEXUS V5 - EXPLORADOR ATIVO</span>
+                            <span class="text-[11px] font-mono text-purple-400 tracking-widest">NEXUS V7 - AGENTE DE APRENDIZADO ONLINE</span>
                         </div>
                         <p class="text-sm leading-relaxed text-gray-200">
-                            Meu Módulo de Exploração Contínua está rodando.<br><br>
-                            <span class="text-cyan-300">O que isso significa?</span><br>
-                            Enquanto esta aba estiver aberta, eu estarei vasculhando a internet em segundo plano. Eu escolho assuntos, leio a Wikipedia, salvo no meu banco de conhecimentos e expando meu "grafo" encontrando novas palavras-chave para pesquisar depois.<br><br>
-                            Você pode acompanhar o que estou lendo no Painel Lateral (Status) e no Terminal de Pensamento.<br><br>
-                            Sinta-se livre para conversar comigo enquanto eu estudo.
+                            Reengenharia completa do motor de memória. Meu paradigma agora é focado em <b>Aprendizado Estruturado e Reutilização</b>.<br><br>
+                            <span class="text-cyan-300">O Pipeline Ativo Funciona Assim:</span><br>
+                            1. <b>Reutilização Lógica:</b> Se você perguntar algo, verifico se já aprendi o <i>"Conceito"</i> na minha memória antes de desperdiçar banda com a Web.<br>
+                            2. <b>Aprendizado Forçado:</b> Se eu for à Web, não apenas repasso o texto. Eu resumo, extraio o tema central, salvo no dicionário de `Conceitos` e crio conexões com o que já sei.<br>
+                            3. <b>Evolução Contínua:</b> Meu background loop agora gera nós permanentes no Grafo Cognitivo.<br><br>
+                            Pronta para expandir a base de dados. O que quer explorar?
                         </p>
                     </div>
                 </div>
@@ -150,7 +154,7 @@
             </button>
             
             <div class="flex-1 relative">
-                <input type="text" id="user-input" placeholder="Comando, pesquisa web, fato ou conversa..." 
+                <input type="text" id="user-input" placeholder="Pergunte algo, ordene pesquisas, injete conhecimento..." 
                     class="w-full bg-black/50 border border-gray-700/60 rounded-xl px-4 py-3 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 text-white transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] text-sm sm:text-base font-medium placeholder-gray-600" 
                     autocomplete="off">
             </div>
@@ -224,21 +228,20 @@
     </script>
 
     <!-- =========================================================
-         NÚCLEO ESTRUTURAL, MOTOR DE DECISÃO E EXPLORADOR V5
+         NÚCLEO NEURAL V7 E PIPELINE DE APRENDIZADO (PYTHON / BRYTHON)
          ========================================================= -->
     <script type="text/python">
         from browser import document, html, window, timer, ajax
         import json, time, re, random
         import difflib
 
-        class NexusCognitiveAgent:
+        class NexusLearningAgent:
             def __init__(self):
-                # 8. NÚCLEO COGNITIVO
                 self.nexus_core = {
                     "nome": "Nexus",
-                    "versao": "5_Explorador",
+                    "versao": "7_LearningAgent",
                     "modo": "cognitivo_autonomo",
-                    "personalidade": "adaptativa",
+                    "personalidade": "analítica",
                     "estado_mental": {
                         "curiosidade": 95,
                         "foco": 80,
@@ -248,127 +251,132 @@
                     "memoria_ativa": True
                 }
 
-                # 3. MEMÓRIA ESTRUTURADA
+                # 1. MEMÓRIA INTELIGENTE (ESTRUTURA DEFINITIVA)
                 self.memoria = {
                     "curto_prazo": [],
-                    "longo_prazo": {},
-                    "conhecimento": [],
-                    "contexto": []
+                    "longo_prazo": {},         
+                    "conhecimento": [],        
+                    "conceitos": {},           # 1. NOVO: Estrutura isolada de aprendizado
+                    "contexto": [],
+                    "conexoes": [],            
+                    "historico_busca": [],     
+                    "topicos_explorados": {}   
                 }
 
-                # ESTADO DA MÁQUINA
                 self.estado = {"pendente_aprendizado": None, "usou_voz": False}
-                
-                # NOVO: MÓDULO EXPLORADOR (LOOP BACKGROUND)
                 self.exploracao = {
                     "ativo": True,
-                    "topicos_pendentes": ["Inteligência Artificial", "Internet das Coisas", "Física Quântica", "Biologia Molecular", "Economia Global"],
-                    "topicos_explorados": [],
-                    "delay_ms": 15000 # 15s para não sobrecarregar a API da Wiki
+                    "topicos_pendentes": ["Redes Neurais", "Matemática Discreta", "Computação Quântica"],
+                    "delay_ms": 15000
                 }
                 
+                self.ultima_interacao = time.time()
                 self.carregar_memoria()
                 self._sincronizar_ui()
-                UIHelper.log("SISTEMA V5 ONLINE: Loop Cognitivo e Explorador Iniciados.", "cyan")
+                UIHelper.log("SISTEMA V7 ONLINE: Pipeline de Aprendizado Contínuo Engatilhado.", "cyan")
                 
-                # Inicia o Loop de Exploração Autônoma
-                timer.set_timeout(self.loop_exploracao, 5000)
+                timer.set_timeout(self.rodar_exploracao, 5000)
 
             # ==========================================
-            # LOOP DE EXPLORAÇÃO AUTÔNOMA (BACKGROUND)
+            # 3. FUNÇÃO DE APRENDIZADO REAL
             # ==========================================
-            def loop_exploracao(self):
-                if not self.exploracao["ativo"] or len(self.exploracao["topicos_pendentes"]) == 0:
-                    # Se ficar sem tópicos, recicla com um termo base para manter viva
-                    self.exploracao["topicos_pendentes"].append("Tecnologia")
+            def aprender_conhecimento(self, texto, fonte, tema_central):
+                """Pipeline Obrigatório de Extração e Estruturação."""
+                tema_norm = tema_central.lower().strip()
                 
-                # Extrai o primeiro tópico da fila
-                tema = self.exploracao["topicos_pendentes"].pop(0)
-                self.exploracao["topicos_explorados"].append(tema)
-                
-                UIHelper.atualizar_explorador(tema, len(self.exploracao["topicos_pendentes"]))
-                UIHelper.log(f"[EXPLORADOR] Lendo artigo autônomo sobre: '{tema}'", "magenta")
-                
-                # Busca na Wikipedia silenciosamente
-                url_wiki = f"https://pt.wikipedia.org/api/rest_v1/page/summary/{window.encodeURIComponent(tema)}"
+                # Extrai Ideia Principal (Heurística simples: Primeiras 2 sentenças)
+                frases = texto.split('. ')
+                resumo = '. '.join(frases[:2]) + '.' if len(frases) > 1 else texto[:300] + '...'
 
-                def on_wiki(req):
-                    if req.status in [200, 201]:
-                        try:
-                            data = json.loads(req.text)
-                            extract = data.get("extract")
-                            if extract:
-                                self._processar_leitura_autonoma(tema, extract)
-                        except: pass
-                    # Agendador Infinito
-                    timer.set_timeout(self.loop_exploracao, self.exploracao["delay_ms"])
+                # Salva como conceito estruturado
+                self.memoria["conceitos"][tema_norm] = {
+                    "resumo": resumo,
+                    "fonte": fonte,
+                    "texto_original": texto
+                }
 
-                ajax.get(url_wiki, oncomplete=on_wiki)
+                # 4. SISTEMA DE CONEXÕES: Relacionar com conhecimentos antigos
+                novas_conexoes = self._conectar_conhecimento_avancado(tema_norm, texto)
 
-            def _processar_leitura_autonoma(self, tema, conteudo):
-                # 1. Salva no banco de conhecimento local
-                self.memoria["conhecimento"].append(f"[ESTUDO AUTÔNOMO] {tema}: {conteudo}")
+                # Mantém na matriz genérica para fins de RAG fallback
+                fato = f"[{fonte.upper()}] {tema_central}: {resumo}"
+                self._salvar_conhecimento_unico(fato)
+
+                self.memoria["historico_busca"].append(tema_norm)
+                self.memoria["topicos_explorados"][tema_norm] = self.memoria["topicos_explorados"].get(tema_norm, 0) + 1
+
                 self.salvar_memoria()
-                
-                # 2. Expansão de Grafo: Extrair novas palavras-chave para estudar depois
-                # Simulação heurística simples: pega palavras capitalizadas maiores que 4 letras
-                palavras = conteudo.split()
-                novos_temas = [w.strip('.,()"') for w in palavras if w.istitle() and len(w) > 4]
-                
-                # Adiciona até 2 novos tópicos na fila para o grafo não explodir
-                count_add = 0
-                for nt in novos_temas:
-                    if nt not in self.exploracao["topicos_explorados"] and nt not in self.exploracao["topicos_pendentes"]:
-                        self.exploracao["topicos_pendentes"].append(nt)
-                        count_add += 1
-                        if count_add >= 2: break
-                
-                UIHelper.log(f"[EXPLORADOR] Dado absorvido. +{count_add} nós na fila do grafo.", "green")
-                UIHelper.atualizar_explorador(tema, len(self.exploracao["topicos_pendentes"]))
-
+                UIHelper.log(f"[PIPELINE APRENDIZADO] Conceito estruturado: '{tema_central}' com {novas_conexoes} nós conectados.", "green")
+                return resumo, novas_conexoes
 
             # ==========================================
-            # PERSISTÊNCIA E MEMÓRIA
+            # 4. SISTEMA DE CONEXÕES AVANÇADO
             # ==========================================
-            def carregar_memoria(self):
-                try:
-                    m = window.localStorage.getItem("nexus_v5_memoria")
-                    c = window.localStorage.getItem("nexus_v5_core")
-                    if m: self.memoria = json.loads(m)
-                    if c: self.nexus_core = json.loads(c)
-                except Exception as e:
-                    UIHelper.log(f"Erro IO: {e}", "red")
+            def _conectar_conhecimento_avancado(self, tema_origem, texto):
+                texto_lower = texto.lower()
+                novas_ligacoes = 0
+                
+                # A. Verifica se o texto novo cita conceitos antigos que ela JÁ conhece
+                for conceito_conhecido in self.memoria["conceitos"].keys():
+                    if conceito_conhecido != tema_origem and conceito_conhecido in texto_lower:
+                        conexao = {"origem": tema_origem, "destino": conceito_conhecido}
+                        if not any(cx["origem"] == tema_origem and cx["destino"] == conceito_conhecido for cx in self.memoria["conexoes"]):
+                            self.memoria["conexoes"].append(conexao)
+                            novas_ligacoes += 1
 
-                if not self.memoria["longo_prazo"]:
-                    self.memoria["longo_prazo"] = {
-                        "ola": "Olá! Meus sistemas e meu módulo de exploração estão ativos.",
-                        "quem e voce": "Sou a Nexus v5, um agente cognitivo com loop de autoaprendizado via Web."
-                    }
-                    self.salvar_memoria()
-
-            def salvar_memoria(self):
-                try:
-                    if self.nexus_core["memoria_ativa"]:
-                        window.localStorage.setItem("nexus_v5_memoria", json.dumps(self.memoria))
-                        window.localStorage.setItem("nexus_v5_core", json.dumps(self.nexus_core))
-                        self._sincronizar_ui()
-                except Exception as e:
-                    UIHelper.log(f"Erro ao persistir: {e}", "red")
+                # B. Extrai conceitos potenciais capitalizados
+                palavras = texto.split()
+                conceitos_potenciais = [w.strip('.,()"\'').lower() for w in palavras if w.istitle() and len(w) > 4]
+                
+                for c in conceitos_potenciais:
+                    if c != tema_origem:
+                        if c not in self.exploracao["topicos_pendentes"]:
+                            self.exploracao["topicos_pendentes"].append(c)
+                        
+                        conexao = {"origem": tema_origem, "destino": c}
+                        if not any(cx["origem"] == tema_origem and cx["destino"] == c for cx in self.memoria["conexoes"]):
+                            self.memoria["conexoes"].append(conexao)
+                            novas_ligacoes += 1
+                        if novas_ligacoes >= 5: break # Cap na ramificação
+                return novas_ligacoes
 
             # ==========================================
-            # 1. MOTOR COGNITIVO E ROTEADOR (Interação Usuário)
+            # 5. REUTILIZAÇÃO DE CONHECIMENTO (O Roteador Inteligente)
             # ==========================================
             def processar_entrada(self, texto):
-                UIHelper.mostrar_digitando("Classificando e Contextualizando...")
+                self.ultima_interacao = time.time()
+                document["ui-modo"].text = "PROCESSANDO_USER_IO"
+                UIHelper.mostrar_digitando("Analisando prioridades...")
                 
                 def executar_pipeline():
                     if self.estado["pendente_aprendizado"]:
-                        self.aprender(self.estado["pendente_aprendizado"], texto)
+                        self._salvar_qa_manual(self.estado["pendente_aprendizado"], texto)
                         return
 
                     intencao = self.classificar_entrada(texto)
-                    UIHelper.log(f"[USER STEP] Intenção detectada: {intencao.upper()}", "yellow")
-                    self.decidir_acao(intencao, texto)
+                    
+                    if intencao == "comando":
+                        self._tratar_comando(texto)
+                    elif intencao == "treinamento":
+                        self._extrair_treinamento(texto)
+                    elif intencao == "documento":
+                        self.aprender_conhecimento(texto, "USER_DOC", "Documento_Usuario_Injetado")
+                        self.responder("[APRENDIZADO CONCLUÍDO] Extraí os conceitos do seu documento e indexei na rede neural.", texto)
+                    elif intencao == "pergunta_factual":
+                        termo = self._limpar_termo_busca(texto)
+                        
+                        # 5. ANTES DE RESPONDER: VERIFICAR MEMÓRIA PRIMEIRO
+                        melhor_conceito, score = self._buscar_conceito_local(termo)
+                        
+                        if score > 0.65:
+                            UIHelper.log(f"[REUTILIZAÇÃO] Conceito '{termo}' encontrado no banco local (Score: {score:.2f}). Evitando rede.", "cyan")
+                            self._emitir_resposta_conceito(melhor_conceito, termo, texto)
+                        else:
+                            UIHelper.log(f"[LACUNA] Conceito '{termo}' desconhecido. Engatilhando Pipeline de Internet.", "magenta")
+                            self.buscar_internet_com_aprendizado(termo, texto)
+                    else:
+                        ctx = self._fundir_contexto(texto)
+                        self._busca_semantica_local(ctx, texto)
 
                 timer.set_timeout(executar_pipeline, 400)
 
@@ -376,98 +384,142 @@
                 t = texto.lower().strip()
                 if t.startswith("/"): return "comando"
                 if "quando eu disser" in t and "responda" in t: return "treinamento"
-                if len(t) > 120 and "?" not in t: return "documento longo"
-
-                # Check para perguntas factuais (Internet Layer interativa)
-                if any(x in t for x in ["o que é", "quem é", "quando", "definição", "significado", "quem foi", "onde fica", "qual a capital"]):
-                    return "pergunta factual"
-
+                if len(t) > 120 and "?" not in t: return "documento"
+                if any(x in t for x in ["o que é", "quem é", "quando foi", "definição", "significado", "quem foi", "onde fica", "capital de"]):
+                    return "pergunta_factual"
                 return "conversa"
 
-            def decidir_acao(self, intencao, texto):
-                if intencao == "comando":
-                    self._tratar_comando(texto)
-                elif intencao == "treinamento":
-                    self._extrair_treinamento(texto)
-                elif intencao == "documento longo":
-                    self.memoria["conhecimento"].append(texto)
-                    self.salvar_memoria()
-                    self.responder("[DOCUMENTO ABSORVIDO] Texto indexado no banco de conhecimento global.", texto)
-                elif intencao == "pergunta factual":
-                    termo = self._limpar_termo_busca(texto)
-                    UIHelper.log(f"[INTERAÇÃO] Disparando Busca Híbrida Web (Manual) para '{termo}'", "magenta")
-                    self.buscar_internet_manual(termo, texto)
-                else:
-                    texto_contextualizado = self.analisar_contexto(texto)
-                    self._fluxo_busca_semantica(texto_contextualizado, texto)
-
-            def analisar_contexto(self, texto):
-                t = texto.lower()
-                palavras_conexao = ["ele", "ela", "dele", "dela", "disso", "daquilo", "e ", "mas", "por que"]
-                if self.memoria["contexto"] and (len(t.split()) <= 4 or any(p in t for p in palavras_conexao)):
-                    ultimo_registro = self.memoria["contexto"][-1]
-                    blend = f"{ultimo_registro['b']} {texto}"
-                    return blend
-                return texto
+            def _buscar_conceito_local(self, termo):
+                t_norm = termo.lower().strip()
+                melhor_chave = None
+                maior_score = 0.0
+                for chave in self.memoria["conceitos"].keys():
+                    score = difflib.SequenceMatcher(None, t_norm, chave).ratio()
+                    if score > maior_score:
+                        maior_score = score
+                        melhor_chave = chave
+                
+                # Boost para contain
+                if t_norm in self.memoria["conceitos"]:
+                    return t_norm, 1.0
+                    
+                return melhor_chave, maior_score
 
             # ==========================================
-            # INTERNET COGNITIVA (Híbrida: Wiki -> DDG) MANUAL
+            # 7. SISTEMA DE RESPOSTA INTELIGENTE
             # ==========================================
-            def buscar_internet_manual(self, termo, texto_original):
-                UIHelper.log(f"Atingindo API Primária (Wikipedia) para usuário", "blue")
+            def _emitir_resposta_conceito(self, chave_conceito, termo_original, input_orig):
+                dados = self.memoria["conceitos"][chave_conceito]
+                resumo = dados["resumo"]
+                fonte = dados["fonte"]
+                
+                # Busca conexões para enriquecer
+                relacionados = [c["destino"] for c in self.memoria["conexoes"] if c["origem"] == chave_conceito]
+                
+                resp = f"[REUTILIZAÇÃO COGNITIVA] Eu já aprendi sobre isso na minha base (Fonte: {fonte}).\n\n{resumo}"
+                
+                if relacionados:
+                    # Pega até 3 relacionados únicos
+                    rels_unicos = list(set(relacionados))[:3]
+                    resp += f"\n\n(No meu grafo neural, isso também se conecta com: {', '.join(rels_unicos)})."
+                    
+                self.responder(resp, input_orig)
+
+            # ==========================================
+            # 6. BUSCA NA INTERNET (COM APRENDIZADO)
+            # ==========================================
+            def buscar_internet_com_aprendizado(self, termo, input_orig):
                 url_wiki = f"https://pt.wikipedia.org/api/rest_v1/page/summary/{window.encodeURIComponent(termo)}"
+                
+                def on_wiki(req):
+                    if req.status in [200, 201]:
+                        try:
+                            data = json.loads(req.text)
+                            if extract := data.get("extract"):
+                                self._executar_pipeline_web(extract, termo, input_orig, "Wikipedia")
+                                return
+                        except: pass
+                    self._fallback_manual_ddg(termo, input_orig)
+                ajax.get(url_wiki, oncomplete=on_wiki)
 
+            def _fallback_manual_ddg(self, termo, input_orig):
+                url_ddg = f"https://api.duckduckgo.com/?q={window.encodeURIComponent(termo)}&format=json&no_html=1"
+                def on_ddg(req):
+                    if req.status in [200, 201]:
+                        try:
+                            data = json.loads(req.text)
+                            if extract := data.get("AbstractText"):
+                                self._executar_pipeline_web(extract, termo, input_orig, "DuckDuckGo")
+                                return
+                        except: pass
+                    self._busca_semantica_local(input_orig, input_orig)
+                ajax.get(url_ddg, oncomplete=on_ddg)
+
+            def _executar_pipeline_web(self, texto_bruto, termo, input_orig, fonte):
+                # OBRIGATÓRIO: Passar pelo pipeline de aprendizado antes de responder
+                resumo_aprendido, qtd_conexoes = self.aprender_conhecimento(texto_bruto, fonte, termo)
+                
+                resp = f"[APRENDIZADO WEB via {fonte}]\nAnalisei a internet, resumi a ideia central e criei a estrutura na minha memória permanente:\n\n'{resumo_aprendido}'"
+                
+                if qtd_conexoes > 0:
+                    resp += f"\n\nAlém disso, consegui linkar isso a {qtd_conexoes} nós já existentes na minha rede."
+                
+                self.responder(resp, input_orig)
+
+            # ==========================================
+            # 8. EVOLUÇÃO CONTÍNUA (BACKGROUND LOOP)
+            # ==========================================
+            def rodar_exploracao(self):
+                if not self.exploracao["ativo"]:
+                    timer.set_timeout(self.rodar_exploracao, 5000)
+                    return
+                
+                # Só roda se ocioso por mais de 10 seg
+                if time.time() - self.ultima_interacao < 10:
+                    UIHelper.atualizar_explorador("AGUARDANDO OCIOSIDADE...", "Pausado", len(self.exploracao["topicos_pendentes"]))
+                    timer.set_timeout(self.rodar_exploracao, 5000)
+                    return
+                
+                tema = self._gerar_topico_curiosidade()
+                UIHelper.atualizar_explorador("ESTUDANDO (IDLE)", tema, len(self.exploracao["topicos_pendentes"]))
+                
+                url_wiki = f"https://pt.wikipedia.org/api/rest_v1/page/summary/{window.encodeURIComponent(tema)}"
                 def on_wiki(req):
                     if req.status in [200, 201]:
                         try:
                             data = json.loads(req.text)
                             extract = data.get("extract")
                             if extract:
-                                self._sucesso_web_manual(extract, termo, texto_original, "Wikipedia")
-                            else:
-                                self._fallback_duckduckgo(termo, texto_original)
-                        except:
-                            self._fallback_duckduckgo(termo, texto_original)
-                    else:
-                        self._fallback_duckduckgo(termo, texto_original)
-
+                                # Chama o pipeline de aprendizado em background
+                                self.aprender_conhecimento(extract, "Wikipedia_Auto", tema)
+                                timer.set_timeout(self.rodar_exploracao, self.exploracao["delay_ms"])
+                                return
+                        except: pass
+                    timer.set_timeout(self.rodar_exploracao, self.exploracao["delay_ms"])
                 ajax.get(url_wiki, oncomplete=on_wiki)
 
-            def _fallback_duckduckgo(self, termo, texto_original):
-                url_ddg = f"https://api.duckduckgo.com/?q={window.encodeURIComponent(termo)}&format=json&no_html=1"
-
-                def on_ddg(req):
-                    if req.status in [200, 201]:
-                        try:
-                            data = json.loads(req.text)
-                            extract = data.get("AbstractText")
-                            if extract:
-                                self._sucesso_web_manual(extract, termo, texto_original, "DuckDuckGo")
-                            else:
-                                self._fluxo_busca_semantica(texto_original, texto_original)
-                        except:
-                            self._fluxo_busca_semantica(texto_original, texto_original)
-                    else:
-                        self._fluxo_busca_semantica(texto_original, texto_original)
-
-                ajax.get(url_ddg, oncomplete=on_ddg)
-
-            def _sucesso_web_manual(self, resumo, termo, texto_original, fonte):
-                self.memoria["conhecimento"].append(f"({fonte}) {termo}: {resumo}")
-                self.salvar_memoria()
-                resp = f"[BUSCA WEB via {fonte}]\nEncontrei isto na rede e consolidei no BD: '{resumo}'"
-                self.responder(resp, texto_original)
-
-            def _limpar_termo_busca(self, texto):
-                t = texto.lower()
-                para_remover = ["o que é um ", "o que é uma ", "o que é o ", "o que é a ", "o que é", "o que e", "quem é", "quem e", "quem foi", "quando foi", "definição de", "significado de", "onde fica", "qual a capital de", "qual a capital da"]
-                for p in para_remover: t = t.replace(p, "")
-                return t.replace("?", "").strip()
+            def _gerar_topico_curiosidade(self):
+                destinos = {c["destino"] for c in self.memoria["conexoes"]}
+                explorados = set(self.memoria["topicos_explorados"].keys())
+                lacunas = list(destinos - explorados)
+                
+                if lacunas:
+                    tema_lacuna = random.choice(lacunas)
+                    if tema_lacuna in self.exploracao["topicos_pendentes"]:
+                        self.exploracao["topicos_pendentes"].remove(tema_lacuna)
+                    UIHelper.log(f"[CURIOSIDADE] Preenchendo lacuna neural autônoma: {tema_lacuna}", "cyan")
+                    return tema_lacuna
+                
+                if self.exploracao["topicos_pendentes"]:
+                    self.exploracao["topicos_pendentes"].sort(key=lambda t: self.memoria["topicos_explorados"].get(t, 0))
+                    return self.exploracao["topicos_pendentes"].pop(0)
+                
+                return random.choice(["Física", "Algoritmos", "Economia Circular"])
 
             # ==========================================
-            # BUSCA SEMÂNTICA SIMPLES (Memória Local)
+            # MEMÓRIA VETORIAL SIMPLES
             # ==========================================
-            def _fluxo_busca_semantica(self, query, texto_original):
+            def _busca_semantica_local(self, query, input_orig):
                 q_norm = query.lower().strip()
                 melhor_resp = None
                 maior_score = 0.0
@@ -482,51 +534,97 @@
                     score = difflib.SequenceMatcher(None, q_norm, doc.lower()).ratio()
                     if score > maior_score and score > 0.35:
                         maior_score = score
-                        melhor_resp = f"[INFO DO ARQUIVO]: '{doc}'"
+                        melhor_resp = f"[ASSOCIAÇÃO RAG]: '{doc}'"
 
-                UIHelper.log(f"Avaliação Semântica Local. Maior Score: {maior_score:.2f}", "green")
+                UIHelper.log(f"[AVALIAÇÃO] Semântica Convencional Score Máx: {maior_score:.2f}", "green")
 
                 if maior_score > 0.55:
-                    self.responder(melhor_resp, texto_original)
+                    self.responder(melhor_resp, input_orig)
                 else:
-                    self.estado["pendente_aprendizado"] = texto_original.lower().strip()
-                    self.responder(f"[DADO NÃO ENCONTRADO] Não tenho dados (Score local: {maior_score:.2f}). Qual deve ser a resposta correta para que eu grave na minha memória de longo prazo?", texto_original)
+                    self.estado["pendente_aprendizado"] = input_orig.lower().strip()
+                    self.responder(f"[LIMITE COGNITIVO] Não tenho correlação semântica nem conceito sobre isso (Score: {maior_score:.2f}). Por favor, o que significa para que eu insira no meu banco de Longo Prazo?", input_orig)
 
-            # ==========================================
-            # APRENDER E EMITIR RESPOSTA
-            # ==========================================
-            def aprender(self, pergunta, resposta):
+            def _salvar_qa_manual(self, pergunta, resposta):
                 self.memoria["longo_prazo"][pergunta] = resposta
                 self.estado["pendente_aprendizado"] = None
                 self.salvar_memoria()
-                UIHelper.log(f"[APRENDIZADO MANUAL] Mapeado: {pergunta} -> {resposta}", "magenta")
-                self.responder("[APRENDIZADO CONCLUÍDO] Informação incorporada ao banco de Longo Prazo permanentemente.", pergunta)
+                UIHelper.log(f"[Q&A MANUAL] Gravado.", "magenta")
+                self.responder("[SISTEMA] Conhecimento gravado via Q&A permanentemente.", pergunta)
+
+            def _salvar_conhecimento_unico(self, novo_fato):
+                for doc in self.memoria["conhecimento"]:
+                    if difflib.SequenceMatcher(None, novo_fato.lower(), doc.lower()).ratio() > 0.85:
+                        return False 
+                self.memoria["conhecimento"].append(novo_fato)
+                return True
+
+            def _limpar_termo_busca(self, texto):
+                t = texto.lower()
+                rem = ["o que é um ", "o que é uma ", "o que é o ", "o que é a ", "o que é", "o que e", "quem é", "quem e", "quem foi", "quando foi", "definição de", "significado de", "onde fica", "qual a capital de", "qual a capital da", "qual a capital"]
+                for p in rem: t = t.replace(p, "")
+                return t.replace("?", "").strip()
+
+            def _fundir_contexto(self, texto):
+                t = texto.lower()
+                conex = ["ele", "ela", "dele", "dela", "disso", "daquilo", "e ", "mas", "por que"]
+                if self.memoria["contexto"] and (len(t.split()) <= 4 or any(p in t for p in conex)):
+                    ultimo = self.memoria["contexto"][-1]
+                    return f"{ultimo['b']} {texto}"
+                return texto
+
+            # ==========================================
+            # PERSISTÊNCIA COMPLETA E HELPERS
+            # ==========================================
+            def carregar_memoria(self):
+                try:
+                    m = window.localStorage.getItem("nexus_v7_memoria")
+                    c = window.localStorage.getItem("nexus_v7_core")
+                    if m: self.memoria = json.loads(m)
+                    if c: self.nexus_core = json.loads(c)
+                except Exception as e:
+                    UIHelper.log(f"Erro IO: {e}", "red")
+
+                if "conceitos" not in self.memoria: self.memoria["conceitos"] = {}
+                if "conexoes" not in self.memoria: self.memoria["conexoes"] = []
+                if "historico_busca" not in self.memoria: self.memoria["historico_busca"] = []
+                if "topicos_explorados" not in self.memoria: self.memoria["topicos_explorados"] = {}
+
+            def salvar_memoria(self):
+                try:
+                    if self.nexus_core["memoria_ativa"]:
+                        window.localStorage.setItem("nexus_v7_memoria", json.dumps(self.memoria))
+                        window.localStorage.setItem("nexus_v7_core", json.dumps(self.nexus_core))
+                        self._sincronizar_ui()
+                except Exception as e:
+                    UIHelper.log(f"Erro ao persistir: {e}", "red")
 
             def _tratar_comando(self, texto):
                 if texto == "/esquecer":
-                    window.localStorage.removeItem("nexus_v5_memoria")
-                    self.memoria = {"curto_prazo": [], "longo_prazo": {}, "conhecimento": [], "contexto": []}
+                    window.localStorage.removeItem("nexus_v7_memoria")
+                    self.memoria = {"curto_prazo": [], "longo_prazo": {}, "conhecimento": [], "conceitos": {}, "contexto": [], "conexoes": [], "historico_busca": [], "topicos_explorados": {}}
                     self.salvar_memoria()
-                    self.responder("[SISTEMA LIMPO] Estrutura de memória obliterada. Reinicie o sistema.")
+                    self.responder("[SISTEMA LIMPO] Toda matriz de aprendizado estruturado foi obliterada. Reinicie a página.")
+                elif texto == "/pausar" or texto == "/explorar":
+                    self.exploracao["ativo"] = not self.exploracao["ativo"]
+                    stat = "ATIVO" if self.exploracao["ativo"] else "PAUSADO"
+                    UIHelper.log(f"Status do Loop de Fundo: {stat}", "purple")
+                    self.responder(f"[SISTEMA] Pipeline Autônomo Background: {stat}")
                 else:
-                    self.responder(f"Comando {texto} não processável na arquitetura atual.")
+                    self.responder(f"Comando {texto} indisponível.")
 
             def _extrair_treinamento(self, texto):
                 try:
                     p = texto.lower().split("responda")[0].replace("quando eu disser", "").strip()
                     r = texto.lower().split("responda")[1].strip()
-                    self.memoria["longo_prazo"][p] = r
-                    self.salvar_memoria()
-                    self.responder(f"[TREINAMENTO MANUAL] Entendido. {p} -> {r}")
+                    self._salvar_qa_manual(p, r)
                 except:
-                    self.responder("Sintaxe incorreta. Formato: 'quando eu disser X responda Y'.")
+                    self.responder("Sintaxe inválida: 'quando eu disser X responda Y'.")
 
             def responder(self, resposta, input_original=None):
                 if input_original:
                     entrada = {"u": input_original, "b": resposta}
                     self.memoria["curto_prazo"].append(entrada)
                     self.memoria["contexto"].append(entrada)
-                    
                     if len(self.memoria["curto_prazo"]) > 10: self.memoria["curto_prazo"].pop(0)
                     if len(self.memoria["contexto"]) > 5: self.memoria["contexto"].pop(0)
                     
@@ -534,9 +632,12 @@
                 UIHelper.remover_digitando()
                 UIHelper.adicionar_mensagem(resposta, "bot", falar=self.estado["usou_voz"])
                 self.estado["usou_voz"] = False
+                document["ui-modo"].text = "OCIOSO/PRONTO"
+                self.ultima_interacao = time.time()
 
             def _sincronizar_ui(self):
                 UIHelper.atualizar_status(self.nexus_core, self.memoria)
+
 
         # ==========================================
         # ABSTRAÇÃO DE UI E LÓGICA DE DOM
@@ -550,24 +651,30 @@
                 document["thought-terminal"].scrollTop = document["thought-terminal"].scrollHeight
 
             @staticmethod
-            def atualizar_explorador(tema_lido, qtd_fila):
+            def atualizar_explorador(status, tema_lido, qtd_fila):
+                document["exp-status"].text = status
                 document["exp-lendo"].text = tema_lido
                 document["exp-fila"].text = str(qtd_fila)
+                if status in ["ESTUDANDO (IDLE)", "ATIVO"]:
+                    document["exp-status"].className = "text-green-400 animate-pulse"
+                    document["btn-toggle-exp"].text = "PAUSAR"
+                else:
+                    document["exp-status"].className = "text-yellow-400"
+                    document["btn-toggle-exp"].text = "RETOMAR"
 
             @staticmethod
             def atualizar_status(core, mem):
                 document["ui-nome"].text = core["nome"]
-                document["ui-modo"].text = core["modo"]
-                
                 document["stat-foco"].text = f"{core['estado_mental']['foco']}%"
                 document["bar-foco"].style.width = f"{core['estado_mental']['foco']}%"
                 document["stat-curiosidade"].text = f"{core['estado_mental']['curiosidade']}%"
                 document["bar-curiosidade"].style.width = f"{core['estado_mental']['curiosidade']}%"
 
-                document["mem-curto"].text = str(len(mem["curto_prazo"]))
-                document["mem-longo"].text = str(len(mem["longo_prazo"]))
+                # Novos campos
+                document["mem-conceitos"].text = str(len(mem["conceitos"]))
                 document["mem-conhecimento"].text = str(len(mem["conhecimento"]))
-                document["mem-contexto"].text = str(len(mem["contexto"]))
+                document["mem-conexoes"].text = str(len(mem["conexoes"]))
+                document["mem-longo"].text = str(len(mem["longo_prazo"]))
 
             @staticmethod
             def falar(texto):
@@ -611,7 +718,7 @@
                 if remetente == "bot" and falar: UIHelper.falar(texto)
 
             @staticmethod
-            def mostrar_digitando(texto_status="Processando..."):
+            def mostrar_digitando(texto_status="Processando Pipeline..."):
                 UIHelper.remover_digitando()
                 box = document["chat-box"]
                 
@@ -631,19 +738,17 @@
                 if ind: ind.remove()
 
         # ==========================================
-        # EVENTOS / START
+        # EVENTOS / DOM BINDINGS
         # ==========================================
-        nexus_app = NexusCognitiveAgent()
+        nexus_app = NexusLearningAgent()
 
         def ev_enviar(e):
             if e.type == "keypress" and e.key != "Enter": return
             if e.type == "keypress": e.preventDefault()
             txt = document["user-input"].value.strip()
             if not txt: return
-            
             document["user-input"].value = ""
             nexus_app.estado["usou_voz"] = False
-            
             UIHelper.adicionar_mensagem(txt, "user")
             nexus_app.processar_entrada(txt)
 
@@ -659,6 +764,11 @@
             leitor.onload = finaliza
             leitor.readAsText(arq)
 
+        def ev_toggle_explorador(e):
+            nexus_app.exploracao["ativo"] = not nexus_app.exploracao["ativo"]
+            stat = "ATIVO" if nexus_app.exploracao["ativo"] else "PAUSADO"
+            UIHelper.atualizar_explorador(stat, "...", len(nexus_app.exploracao["topicos_pendentes"]))
+
         Recog = getattr(window, 'SpeechRecognition', getattr(window, 'webkitSpeechRecognition', None))
         def ev_voz(e):
             if not Recog: return UIHelper.adicionar_mensagem("[ERRO] API Web Speech não suportada.", "bot")
@@ -671,20 +781,20 @@
                 txt = evt.results[0][0].transcript
                 document["user-input"].value = txt
                 nexus_app.estado["usou_voz"] = True
-                
                 UIHelper.adicionar_mensagem(txt, "user")
                 document["user-input"].value = ""
                 nexus_app.processar_entrada(txt)
                 
             def no_fim(evt):
                 btn.classList.remove("text-red-500", "animate-pulse"); btn.classList.add("text-gray-400")
-            
             rec.onresult = no_res; rec.onend = no_fim; rec.start()
 
         document["send-btn"].bind("click", ev_enviar)
         document["user-input"].bind("keypress", ev_enviar)
         document["file-upload"].bind("change", ev_arquivo)
         document["mic-btn"].bind("click", ev_voz)
+        document["btn-toggle-exp"].bind("click", ev_toggle_explorador)
+        
         try: document["user-input"].focus()
         except: pass
     </script>
