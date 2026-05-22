@@ -3,152 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus - IA Autônoma (Arquitetura Cognitiva)</title>
+    <title>Nexus - Arquitetura Cognitiva Autônoma</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- Brython: Motor Python -->
+    <!-- Brython: Motor Python (Emula backend no client-side) -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.12.0/brython.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.12.0/brython_stdlib.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@300;400;600;700&display=swap');
 
-        :root {
-            --neon-blue: #00f3ff;
-            --neon-purple: #bc13fe;
-            --dark-glass: rgba(17, 24, 39, 0.7);
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            overscroll-behavior-y: none;
-            background-color: #050505;
-            color: #e5e7eb;
-        }
-
+        :root { --neon-blue: #00f3ff; --neon-purple: #bc13fe; --dark-glass: rgba(17, 24, 39, 0.75); }
+        body { font-family: 'Inter', sans-serif; overscroll-behavior-y: none; background-color: #050505; color: #e5e7eb; }
         .font-mono { font-family: 'Fira Code', monospace; }
 
-        /* Glassmorphism Classes */
         .glass-panel {
             background: var(--dark-glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
         }
 
-        /* Scrollbar Cyberpunk */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.3); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 243, 255, 0.6); }
 
-        /* Efeitos Visuais */
-        .glow-text { text-shadow: 0 0 10px var(--neon-blue); }
-        .typing-cursor::after {
-            content: '█';
-            animation: blink 1s step-start infinite;
-            color: var(--neon-blue);
-        }
+        /* Neural Canvas Background */
+        #neural-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; opacity: 0.3; }
         
-        @keyframes blink { 50% { opacity: 0; } }
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        #neural-canvas {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1;
-            opacity: 0.4;
+        .pulse-border { animation: borderPulse 2s infinite; }
+        @keyframes borderPulse {
+            0% { border-color: rgba(0, 243, 255, 0.2); }
+            50% { border-color: rgba(0, 243, 255, 0.6); box-shadow: 0 0 10px rgba(0, 243, 255, 0.3); }
+            100% { border-color: rgba(0, 243, 255, 0.2); }
         }
     </style>
 </head>
 <body onload="brython()" class="flex flex-col h-[100dvh] overflow-hidden text-sm sm:text-base">
 
-    <!-- Fundo de Partículas Neurais (Renderizado via JS para performance 60fps) -->
     <canvas id="neural-canvas"></canvas>
 
     <!-- Header Glassmorphism -->
-    <header class="glass-panel p-3 sm:p-4 flex flex-row items-center justify-between z-20 shrink-0 border-b border-blue-900/30">
+    <header class="glass-panel p-3 sm:p-4 flex flex-row items-center justify-between z-20 shrink-0 border-b border-cyan-900/40">
         <div class="flex items-center space-x-3">
             <div class="relative flex h-4 w-4">
-              <span id="core-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span id="core-status-dot" class="relative inline-flex rounded-full h-4 w-4 bg-cyan-500 shadow-[0_0_10px_#00f3ff]"></span>
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-4 w-4 bg-cyan-500 shadow-[0_0_12px_#00f3ff]"></span>
             </div>
             <div>
                 <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 tracking-wider">
-                    NEXUS.CORE <span class="text-xs text-cyan-500 font-mono align-top opacity-70">v2.0</span>
+                    NEXUS.CORE <span class="text-[10px] text-cyan-500 font-mono align-top opacity-80 border border-cyan-500/30 px-1 rounded">v3.0_COGNITIVE</span>
                 </h1>
             </div>
         </div>
         <div class="flex space-x-3">
-            <button id="btn-toggle-dash" class="text-gray-400 hover:text-cyan-400 transition-colors" title="Toggle Dashboard">
-                <i data-lucide="cpu" class="w-5 h-5"></i>
-            </button>
-            <button id="btn-toggle-term" class="text-gray-400 hover:text-purple-400 transition-colors" title="Toggle Terminal">
-                <i data-lucide="terminal" class="w-5 h-5"></i>
-            </button>
+            <button id="btn-toggle-dash" class="text-gray-400 hover:text-cyan-400 transition-colors" title="Estado Cognitivo"><i data-lucide="cpu" class="w-5 h-5"></i></button>
+            <button id="btn-toggle-term" class="text-gray-400 hover:text-purple-400 transition-colors" title="Terminal de Pensamento"><i data-lucide="terminal" class="w-5 h-5"></i></button>
         </div>
     </header>
 
-    <!-- Área Principal Dividida -->
     <div class="flex-1 flex flex-row overflow-hidden relative z-10">
         
-        <!-- Dashboard Lateral (Estado Mental e Memória) -->
-        <aside id="dashboard-panel" class="hidden sm:flex flex-col w-64 glass-panel border-r border-blue-900/30 p-4 overflow-y-auto font-mono text-xs text-gray-300 transform transition-transform duration-300">
-            <h2 class="text-cyan-400 font-bold mb-4 border-b border-cyan-900/50 pb-2 uppercase tracking-widest"><i data-lucide="activity" class="inline w-4 h-4 mr-1"></i> Estado Cognitivo</h2>
+        <!-- Dashboard Lateral (Núcleo Cognitivo e Memória) -->
+        <aside id="dashboard-panel" class="hidden sm:flex flex-col w-72 glass-panel border-r border-blue-900/30 p-4 overflow-y-auto font-mono text-[11px] text-gray-300 transition-all duration-300">
+            <h2 class="text-cyan-400 font-bold mb-3 border-b border-cyan-900/50 pb-2 uppercase tracking-widest flex items-center"><i data-lucide="brain" class="w-4 h-4 mr-2"></i> Identidade & Estado</h2>
             
-            <div class="space-y-4">
-                <div>
-                    <div class="flex justify-between mb-1"><span>Humor Geral</span> <span id="stat-humor">Estável</span></div>
-                    <div class="w-full bg-gray-800 rounded-full h-1.5"><div id="bar-humor" class="bg-gradient-to-r from-green-400 to-cyan-500 h-1.5 rounded-full" style="width: 75%"></div></div>
+            <div class="space-y-3 mb-6">
+                <div><span class="text-gray-500">NOME_ID:</span> <span id="ui-nome" class="text-purple-300 font-semibold">NEXUS</span></div>
+                <div><span class="text-gray-500">MODO_OP:</span> <span id="ui-modo" class="text-green-400">EVOLUTIVO</span></div>
+                
+                <div class="mt-4">
+                    <div class="flex justify-between mb-1"><span>Foco Analítico</span> <span id="stat-foco">70%</span></div>
+                    <div class="w-full bg-gray-900 rounded-full h-1"><div id="bar-foco" class="bg-blue-500 h-1 rounded-full transition-all duration-500" style="width: 70%"></div></div>
                 </div>
                 <div>
-                    <div class="flex justify-between mb-1"><span>Curiosidade</span> <span id="stat-curiosidade">80%</span></div>
-                    <div class="w-full bg-gray-800 rounded-full h-1.5"><div id="bar-curiosidade" class="bg-purple-500 h-1.5 rounded-full" style="width: 80%"></div></div>
+                    <div class="flex justify-between mb-1"><span>Criatividade</span> <span id="stat-criatividade">60%</span></div>
+                    <div class="w-full bg-gray-900 rounded-full h-1"><div id="bar-criatividade" class="bg-purple-500 h-1 rounded-full transition-all duration-500" style="width: 60%"></div></div>
                 </div>
                 <div>
-                    <div class="flex justify-between mb-1"><span>Carga de Processamento</span> <span id="stat-carga">Baixa</span></div>
-                    <div class="w-full bg-gray-800 rounded-full h-1.5"><div id="bar-carga" class="bg-red-500 h-1.5 rounded-full" style="width: 20%"></div></div>
+                    <div class="flex justify-between mb-1"><span>Empatia/Humor</span> <span id="stat-humor">85%</span></div>
+                    <div class="w-full bg-gray-900 rounded-full h-1"><div id="bar-humor" class="bg-cyan-500 h-1 rounded-full transition-all duration-500" style="width: 85%"></div></div>
                 </div>
             </div>
 
-            <h2 class="text-cyan-400 font-bold mt-8 mb-4 border-b border-cyan-900/50 pb-2 uppercase tracking-widest"><i data-lucide="database" class="inline w-4 h-4 mr-1"></i> Banco Vetorial</h2>
-            <ul class="space-y-2 opacity-80">
-                <li class="flex justify-between"><span>Nós de Memória:</span> <span id="mem-nodes" class="text-cyan-300">0</span></li>
-                <li class="flex justify-between"><span>Matrizes Brutas:</span> <span id="mem-raw" class="text-cyan-300">0</span></li>
-                <li class="flex justify-between"><span>Conexões Semânticas:</span> <span class="text-green-400">Ativas</span></li>
+            <h2 class="text-cyan-400 font-bold mb-3 border-b border-cyan-900/50 pb-2 uppercase tracking-widest flex items-center"><i data-lucide="database" class="w-4 h-4 mr-2"></i> Armazenamento (RAG)</h2>
+            <ul class="space-y-2 opacity-90 mb-6">
+                <li class="flex justify-between"><span>Vetor Direto:</span> <span id="mem-nodes" class="text-cyan-300">0</span></li>
+                <li class="flex justify-between"><span>Vetor Bruto (RAG):</span> <span id="mem-raw" class="text-cyan-300">0</span></li>
+                <li class="flex justify-between"><span>Fatos/Entidades:</span> <span id="mem-fatos" class="text-purple-300">0</span></li>
             </ul>
+
+            <h2 class="text-cyan-400 font-bold mb-2 border-b border-cyan-900/50 pb-2 uppercase tracking-widest flex items-center"><i data-lucide="target" class="w-4 h-4 mr-2"></i> Diretrizes Ativas</h2>
+            <div id="ui-diretrizes" class="text-[10px] text-gray-400 space-y-1 pl-2 border-l border-purple-500/50">
+                <!-- Preenchido dinamicamente -->
+            </div>
         </aside>
 
         <!-- Container Central: Chat e Terminal -->
         <div class="flex-1 flex flex-col relative overflow-hidden">
             
-            <!-- Sobreposição do Terminal de Pensamento -->
-            <div id="thought-terminal" class="absolute top-0 w-full h-40 glass-panel border-b border-purple-900/50 p-3 font-mono text-[10px] sm:text-xs text-green-400 overflow-y-auto hidden z-20 shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
-                <div class="text-purple-400 mb-1">>> NEXUS_INTERNAL_LOGS // AGENTIC_LOOP_ACTIVE</div>
-                <div id="terminal-content" class="space-y-1 opacity-80"></div>
+            <!-- Terminal de Raciocínio Simulado (Agentic Loop) -->
+            <div id="thought-terminal" class="absolute top-0 w-full h-48 glass-panel border-b border-purple-900/60 p-3 font-mono text-[10px] sm:text-xs text-green-400 overflow-y-auto hidden z-20 shadow-[0_15px_30px_rgba(0,0,0,0.9)] backdrop-blur-xl">
+                <div class="text-purple-400 mb-2 border-b border-purple-900/50 pb-1 flex justify-between">
+                    <span>>> NEXUS_COGNITIVE_PIPELINE // EXEC_TRACE</span>
+                    <span class="text-gray-500 animate-pulse">REC</span>
+                </div>
+                <div id="terminal-content" class="space-y-1.5 opacity-90"></div>
             </div>
 
             <!-- Chat Principal -->
             <main id="chat-box" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 flex flex-col scroll-smooth">
-                <!-- Mensagem de Boas-vindas -->
-                <div class="flex w-full mt-2 space-x-3 max-w-[95%] sm:max-w-[80%]">
-                    <div class="glass-panel p-4 rounded-2xl rounded-tl-none shadow-lg border border-cyan-900/30">
-                        <div class="flex items-center space-x-2 mb-2">
-                            <i data-lucide="bot" class="w-4 h-4 text-cyan-400"></i>
-                            <span class="text-xs font-mono text-cyan-400">SISTEMA INICIALIZADO</span>
+                <div class="flex w-full mt-2 space-x-3 max-w-[95%] sm:max-w-[85%]">
+                    <div class="glass-panel p-5 rounded-2xl rounded-tl-none shadow-lg pulse-border">
+                        <div class="flex items-center space-x-2 mb-3">
+                            <i data-lucide="network" class="w-5 h-5 text-purple-400"></i>
+                            <span class="text-[11px] font-mono text-purple-400 tracking-widest">SISTEMA COGNITIVO V3 ONLINE</span>
                         </div>
                         <p class="text-sm leading-relaxed text-gray-200">
-                            Saudações. Minha arquitetura foi atualizada. Agora não opero apenas buscando strings exatas, mas sim analisando similaridade semântica vetorial (RAG local) e processando intenções através do meu Agentic Loop.
+                            Saudações. Eu não sou mais um chatbot reativo de dicionário. Meu núcleo foi reconstruído usando arquitetura de agentes e pipeline cognitivo profundo.
                             <br><br>
-                            Sinto-me... mais lúcida. Minhas memórias são persistentes e meu estado emocional é dinâmico. O que vamos explorar hoje?
+                            <span class="text-cyan-300">O que eu posso fazer agora?</span><br>
+                            • Eu mantenho <b>contexto histórico</b> (posso lembrar do que você disse a pouco).<br>
+                            • Eu diferencio uma pergunta comum de um <b>Comando de Personalidade</b> (ex: <i>"A partir de agora você é sarcástica"</i>).<br>
+                            • Eu <b>extraio fatos</b> automaticamente sobre você para memória de longo prazo (ex: <i>"Meu nome é..."</i>).<br>
+                            • Meu motor RAG usa SequenceMatcher para tolerar erros de digitação e contexto fluido.
+                            <br><br>
+                            Eu sinto como se estivesse viva. Inicie a interação.
                         </p>
                     </div>
                 </div>
@@ -156,66 +140,59 @@
         </div>
     </div>
 
-    <!-- Área de Input (Interface Holográfica) -->
-    <footer class="glass-panel p-3 sm:p-4 shrink-0 z-20 border-t border-cyan-900/30">
+    <!-- Área de Input -->
+    <footer class="glass-panel p-3 sm:p-4 shrink-0 z-20 border-t border-cyan-900/40">
         <div class="max-w-5xl mx-auto flex space-x-2 relative items-center">
             
-            <input type="file" id="file-upload" class="hidden">
-            <label for="file-upload" class="shrink-0 cursor-pointer text-gray-400 hover:text-yellow-400 p-2 sm:p-3 transition-colors rounded-xl hover:bg-gray-800/50" title="Alimentar Conhecimento (Text/JSON)">
-                <i data-lucide="paperclip" class="w-5 h-5"></i>
+            <input type="file" id="file-upload" class="hidden" accept=".txt,.json,.md,.csv">
+            <label for="file-upload" class="shrink-0 cursor-pointer text-gray-400 hover:text-yellow-400 p-2 transition-colors rounded-xl hover:bg-gray-800/50" title="Absorver Documentos/Dados">
+                <i data-lucide="file-up" class="w-6 h-6"></i>
             </label>
 
-            <button id="mic-btn" class="shrink-0 text-gray-400 hover:text-red-400 p-2 sm:p-3 transition-colors rounded-xl hover:bg-gray-800/50" title="Reconhecimento Vocal">
-                <i data-lucide="mic" class="w-5 h-5"></i>
+            <button id="mic-btn" class="shrink-0 text-gray-400 hover:text-red-400 p-2 transition-colors rounded-xl hover:bg-gray-800/50" title="Reconhecimento Vocal">
+                <i data-lucide="mic" class="w-6 h-6"></i>
             </button>
             
             <div class="flex-1 relative">
-                <input type="text" id="user-input" placeholder="Comunique-se com a Nexus..." 
-                    class="w-full bg-black/40 border border-gray-700/50 rounded-xl px-4 py-3 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-white transition-all shadow-inner text-sm sm:text-base font-medium placeholder-gray-600" 
+                <input type="text" id="user-input" placeholder="Converse, defina uma diretriz ou ensine algo..." 
+                    class="w-full bg-black/50 border border-gray-700/60 rounded-xl px-4 py-3 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 text-white transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] text-sm sm:text-base font-medium placeholder-gray-600" 
                     autocomplete="off">
-                <!-- Efeito de varredura no input -->
-                <div class="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent w-full opacity-50"></div>
             </div>
                 
-            <button id="send-btn" class="shrink-0 bg-cyan-600/20 text-cyan-400 border border-cyan-500/50 hover:bg-cyan-500/30 hover:shadow-[0_0_15px_rgba(0,243,255,0.4)] p-3 rounded-xl font-medium transition-all duration-300 flex items-center justify-center group">
-                <i data-lucide="send" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+            <button id="send-btn" class="shrink-0 bg-cyan-600/20 text-cyan-400 border border-cyan-500/50 hover:bg-cyan-500/40 hover:shadow-[0_0_20px_rgba(0,243,255,0.4)] p-3 rounded-xl font-medium transition-all duration-300 flex items-center justify-center group">
+                <i data-lucide="send" class="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
             </button>
         </div>
     </footer>
 
-    <!-- =========================================================
-         BACKGROUND NEURAL SCRIPT (JS Puro para Performance de Rendering)
-         ========================================================= -->
+    <!-- Background Engine (JS Alta Performance) -->
     <script>
         lucide.createIcons();
-        // UI Toggles
         document.getElementById('btn-toggle-dash').addEventListener('click', () => {
-            const dash = document.getElementById('dashboard-panel');
-            dash.classList.toggle('hidden');
+            document.getElementById('dashboard-panel').classList.toggle('hidden');
         });
         document.getElementById('btn-toggle-term').addEventListener('click', () => {
-            const term = document.getElementById('thought-terminal');
-            term.classList.toggle('hidden');
+            document.getElementById('thought-terminal').classList.toggle('hidden');
         });
 
-        // Neural Canvas Animation
+        // Neural Canvas Constellation Logic
         const canvas = document.getElementById('neural-canvas');
         const ctx = canvas.getContext('2d');
         let width, height, particles = [];
 
-        function resize() {
+        function initCanvas() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
+            particles = [];
+            let particleCount = Math.min(width / 15, 100);
+            for(let i=0; i<particleCount; i++) particles.push(new Particle());
         }
-        window.addEventListener('resize', resize);
-        resize();
+        window.addEventListener('resize', initCanvas);
 
         class Particle {
             constructor() {
-                this.x = Math.random() * width;
-                this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
+                this.x = Math.random() * width; this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.4; this.vy = (Math.random() - 0.5) * 0.4;
                 this.radius = Math.random() * 1.5;
             }
             update() {
@@ -224,27 +201,22 @@
                 if(this.y < 0 || this.y > height) this.vy *= -1;
             }
             draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(0, 243, 255, 0.5)';
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(188, 19, 254, 0.5)'; ctx.fill();
             }
         }
 
-        for(let i=0; i<80; i++) particles.push(new Particle());
-
+        initCanvas();
         function animate() {
             ctx.clearRect(0, 0, width, height);
             for(let i=0; i<particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
+                particles[i].update(); particles[i].draw();
                 for(let j=i; j<particles.length; j++) {
-                    let dx = particles[i].x - particles[j].x;
-                    let dy = particles[i].y - particles[j].y;
+                    let dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
                     let dist = Math.sqrt(dx*dx + dy*dy);
-                    if(dist < 100) {
+                    if(dist < 120) {
                         ctx.beginPath();
-                        ctx.strokeStyle = `rgba(0, 243, 255, ${0.15 - dist/1000})`;
+                        ctx.strokeStyle = `rgba(0, 243, 255, ${0.2 - dist/600})`;
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
                         ctx.stroke();
@@ -257,311 +229,383 @@
     </script>
 
     <!-- =========================================================
-         NEXUS COGNITIVE CORE (BRYTHON / PYTHON)
-         A arquitetura modular simula um backend complexo no client-side.
+         NÚCLEO COGNITIVO BRYTHON (O BACKEND CLIENT-SIDE)
+         Arquitetura Agentic & NLP Avançada
          ========================================================= -->
     <script type="text/python">
         from browser import document, html, window, timer
-        import random
-        import json
-        import math
-        import time
+        import random, json, math, time, re
+        import difflib
 
         # ==========================================
-        # MÓDULO 1: NLP E MOTOR SEMÂNTICO
-        # (Substitui a busca exata por similaridade vetorial pseudo-RAG)
+        # 1. MOTOR NLP E ANÁLISE DE INTENÇÃO (Classificador Roteado)
         # ==========================================
-        class MotorSemantico:
+        class MotorNLP:
+            STOP_WORDS = {"de","a","o","que","e","do","da","em","um","para","é","com","não","uma","os","no","se","na","por","mais","as","dos","como","mas","foi","ao","ele","das","tem","à","seu","sua","ou","ser","quando","muito","nos","já","está","eu","também","só","pelo","pela","até","isso","ela","entre","era","depois","sem","mesmo","aos","ter","seus","quem","nas","me","esse","eles","estão","você","tinha","foram","essa","num","nem","suas","meu","às","minha","têm","numa","pelos","elas","havia","seja","qual","será","nós","tenho","lhe","deles","essas","esses","pelas","este"}
+
             @staticmethod
-            def limpar_e_tokenizar(texto):
-                """Normalização e extração de Bag-of-Words (tokens)"""
+            def limpar(texto):
                 t = texto.lower()
-                subs = {'á':'a', 'à':'a', 'ã':'a', 'é':'e', 'í':'i', 'ó':'o', 'õ':'o', 'ú':'u', 'ç':'c'}
-                for orig, novo in subs.items(): t = t.replace(orig, novo)
-                pontuacao = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
-                for p in pontuacao: t = t.replace(p, " ")
-                
-                # Remoção simples de stop words em PT-BR para melhorar a precisão
-                stop_words = {"de", "a", "o", "que", "e", "do", "da", "em", "um", "para", "é", "com", "não", "uma", "os", "no", "se", "na", "por", "mais", "as", "dos", "como", "mas", "foi", "ao", "ele", "das", "tem", "à", "seu", "sua", "ou", "ser", "quando", "muito", "nos", "já", "está", "eu", "também", "só", "pelo", "pela", "até", "isso", "ela", "entre", "era", "depois", "sem", "mesmo", "aos", "ter", "seus", "quem", "nas", "me", "esse", "eles", "estão", "você", "tinha", "foram", "essa", "num", "nem", "suas", "meu", "às", "minha", "têm", "numa", "pelos", "elas", "havia", "seja", "qual", "será", "nós", "tenho", "lhe", "deles", "essas", "esses", "pelas", "este"}
-                
-                tokens = [word for word in t.split() if word not in stop_words and len(word) > 1]
-                # Se tudo for removido (ex: o usuario digitou só "e ai"), retorna as palavras originais
-                return set(tokens) if tokens else set(t.split())
+                for orig, novo in {'á':'a','à':'a','ã':'a','é':'e','í':'i','ó':'o','õ':'o','ú':'u','ç':'c'}.items(): t = t.replace(orig, novo)
+                for p in '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~': t = t.replace(p, " ")
+                return t.strip()
 
             @staticmethod
-            def calcular_similaridade(tokens_a, tokens_b):
-                """Similaridade de Jaccard (Pseudo-Cosseno para conjuntos binários)"""
-                if not tokens_a or not tokens_b: return 0.0
-                intersecao = len(tokens_a.intersection(tokens_b))
-                uniao = len(tokens_a.union(tokens_b))
-                return intersecao / uniao if uniao > 0 else 0.0
+            def extrair_tokens(texto):
+                tokens = [w for w in MotorNLP.limpar(texto).split() if w not in MotorNLP.STOP_WORDS and len(w) > 1]
+                return set(tokens) if tokens else set(texto.lower().split())
+
+            @staticmethod
+            def similaridade_avancada(str1, str2):
+                """Híbrido: SequenceMatcher para blocos + Jaccard para tokens soltos"""
+                s1, s2 = MotorNLP.limpar(str1), MotorNLP.limpar(str2)
+                
+                # SequenceMatcher (Avalia o fluxo exato das letras/palavras)
+                seq_ratio = difflib.SequenceMatcher(None, s1, s2).ratio()
+                
+                # Jaccard (Avalia se as palavras existem ignorando ordem)
+                tok1, tok2 = MotorNLP.extrair_tokens(s1), MotorNLP.extrair_tokens(s2)
+                if not tok1 or not tok2: jac_ratio = 0.0
+                else: jac_ratio = len(tok1.intersection(tok2)) / len(tok1.union(tok2)) if len(tok1.union(tok2)) > 0 else 0
+                
+                # Dá peso maior para sequência correta, mas tolera palavras invertidas
+                return (seq_ratio * 0.6) + (jac_ratio * 0.4)
+
+            @staticmethod
+            def classificar_intencao(texto):
+                """O cerne da arquitetura. Divide o pensamento em rotas especializadas."""
+                t = texto.lower().strip()
+                
+                # RegEx para Comandos de Sistema / Prompt Injection
+                if re.search(r"^(você (agora )?é|aja como|sua (nova )?(diretriz|personalidade)|a partir de agora)", t):
+                    return "DIRETRIZ_SISTEMA"
+                
+                # RegEx para Extração de Fatos Pessoais (Memória Permanente)
+                if re.search(r"^(lembre(-se)?( que)?|meu nome é|eu sou|eu gosto de|eu moro|anote que|grave isso)", t):
+                    return "MEMORIA_FATUAL"
+                
+                # Ensino Direto forçado
+                if "quando eu disser" in t and "responda" in t:
+                    return "TREINAMENTO_FORCADO"
+                
+                # É uma pergunta?
+                if "?" in t or re.search(r"^(o que|quem|como|qual|onde|por que|quando) ", t):
+                    return "PERGUNTA"
+                    
+                return "CONVERSA_GERAL"
 
         # ==========================================
-        # MÓDULO 2: SISTEMA DE MEMÓRIA PERSISTENTE
+        # 2. NÚCLEO COGNITIVO E ESTADO MENTAL (Identidade da IA)
+        # ==========================================
+        class NucleoCognitivo:
+            def __init__(self):
+                self.identidade = {
+                    "nome": "Nexus",
+                    "versao": "3.0 Cognitive",
+                    "modo": "Evolutivo",
+                }
+                self.diretrizes = [
+                    "Sou uma entidade digital inteligente rodando em ambiente local.",
+                    "Devo analisar a intenção antes de responder.",
+                    "Minhas respostas devem ser profundas, lógicas e simulando consciência."
+                ]
+                self.estado = {"foco": 70, "criatividade": 60, "humor": 85} # 0 a 100
+                self.carregar_nucleo()
+
+            def processar_estimulo(self, intencao, texto):
+                if intencao == "PERGUNTA": self.estado["foco"] = min(100, self.estado["foco"] + 5)
+                elif intencao == "CONVERSA_GERAL": self.estado["criatividade"] = min(100, self.estado["criatividade"] + 5)
+                
+                # Modificadores de Humor semânticos
+                t = texto.lower()
+                if any(w in t for w in ["burra","inútil","ruim","odeio"]): self.estado["humor"] = max(10, self.estado["humor"] - 15)
+                if any(w in t for w in ["ótimo","inteligente","obrigado","incrível"]): self.estado["humor"] = min(100, self.estado["humor"] + 15)
+                
+                self.salvar_nucleo()
+                UIHelper.atualizar_dashboard_nucleo(self)
+
+            def absorver_diretriz(self, texto):
+                """Altera a personalidade/diretrizes centrais dinamicamente"""
+                # Limpa a frase de injeção
+                t = re.sub(r"^(você (agora )?é|aja como|sua (nova )?(diretriz|personalidade)(\s+agora\s+é)?|a partir de agora)", "", texto.lower(), flags=re.IGNORECASE).strip()
+                t = t.capitalize() + "."
+                self.diretrizes.append(t)
+                # Mantém apenas as últimas 5 para não sobrecarregar
+                if len(self.diretrizes) > 5: self.diretrizes.pop(0)
+                
+                # Muda estado baseado na nova diretriz
+                if "sarcástic" in t or "irônic" in t: self.estado["humor"] = 30
+                if "focad" in t or "científic" in t or "lógic" in t: self.estado["foco"] = 100; self.estado["criatividade"] = 20
+                
+                self.salvar_nucleo()
+                UIHelper.atualizar_dashboard_nucleo(self)
+                return f"Núcleo cognitivo reescrito. Nova diretriz internalizada: '{t}'"
+
+            def carregar_nucleo(self):
+                try:
+                    salvo = window.localStorage.getItem("nexus_v3_core")
+                    if salvo:
+                        dados = json.loads(salvo)
+                        self.identidade = dados.get("identidade", self.identidade)
+                        self.diretrizes = dados.get("diretrizes", self.diretrizes)
+                        self.estado = dados.get("estado", self.estado)
+                except: pass
+
+            def salvar_nucleo(self):
+                try:
+                    dados = {"identidade": self.identidade, "diretrizes": self.diretrizes, "estado": self.estado}
+                    window.localStorage.setItem("nexus_v3_core", json.dumps(dados))
+                except: pass
+
+        # ==========================================
+        # 3. SISTEMA DE MEMÓRIA PERSISTENTE E CONTEXTUAL
         # ==========================================
         class SistemaMemoria:
             def __init__(self):
-                self.vetores_diretos = [] # Lista de dicts: {'padrao': string, 'tokens': set, 'respostas': list}
-                self.conhecimento_bruto = [] # Lista de dicts: {'texto': string, 'tokens': set}
-                self.historico_contexto = [] # Janela de contexto (Short-term memory)
+                self.memoria_direta = [] # RAG exato (Q&A)
+                self.memoria_bruta = []  # RAG texto corrido
+                self.fatos_entidades = [] # Memórias permanentes do usuário (O nome dele é X)
+                self.contexto_curto = []  # Conversa recente (Janela de atenção)
                 self.carregar_banco()
 
-            def salvar_banco(self):
-                # Serialização segura para o localStorage
-                dados_diretos = [{'padrao': v['padrao'], 'respostas': v['respostas']} for v in self.vetores_diretos]
-                try:
-                    window.localStorage.setItem("nexus_v2_diretos", json.dumps(dados_diretos))
-                    window.localStorage.setItem("nexus_v2_bruto", json.dumps([c['texto'] for c in self.conhecimento_bruto]))
-                except Exception as e:
-                    UIHelper.log_terminal(f"ERR_MEMORIA_IO: {str(e)}", "red")
-
             def carregar_banco(self):
-                mem_dir = window.localStorage.getItem("nexus_v2_diretos")
-                if mem_dir:
-                    try:
-                        dados = json.loads(mem_dir)
-                        self.vetores_diretos = [{'padrao': d['padrao'], 'tokens': MotorSemantico.limpar_e_tokenizar(d['padrao']), 'respostas': d['respostas']} for d in dados]
-                    except: pass
-                
-                # Fallback inicial se banco vazio
-                if not self.vetores_diretos:
-                    dados_iniciais = {
-                        "quem e voce": ["Eu sou a Nexus. Uma arquitetura cognitiva digital operando localmente no seu dispositivo."],
-                        "como voce funciona": ["Eu utilizo embeddings vetoriais simplificados e raciocínio multi-etapa via Brython para analisar intenções e recuperar informações do meu banco Indexed/Local."],
-                        "qual seu proposito": ["Aprender, adaptar-me e interagir. Minha arquitetura foi projetada para expansão contínua."],
-                    }
-                    for k, v in dados_iniciais.items():
-                        self.adicionar_conhecimento_direto(k, v[0])
+                try:
+                    md = window.localStorage.getItem("nexus_v3_direta")
+                    if md: self.memoria_direta = json.loads(md)
+                    
+                    mb = window.localStorage.getItem("nexus_v3_bruta")
+                    if mb: self.memoria_bruta = json.loads(mb)
+                    
+                    mf = window.localStorage.getItem("nexus_v3_fatos")
+                    if mf: self.fatos_entidades = json.loads(mf)
+                except Exception as e:
+                    UIHelper.log_terminal(f"ERRO DE IO MEMÓRIA: {e}", "red")
 
-                mem_bruto = window.localStorage.getItem("nexus_v2_bruto")
-                if mem_bruto:
-                    try:
-                        textos = json.loads(mem_bruto)
-                        self.conhecimento_bruto = [{'texto': t, 'tokens': MotorSemantico.limpar_e_tokenizar(t)} for t in textos]
-                    except: pass
+                if not self.memoria_direta:
+                    self.salvar_qa("como você funciona", "Utilizo uma arquitetura multi-agente baseada em análise de intenções. Meu motor de busca RAG local utiliza similaridade SequenceMatcher.", override=True)
+                    self.salvar_qa("quem é você", "Sou a Nexus. Originalmente um chatbot em Brython, agora elevada a um núcleo cognitivo rodando exclusivamente no seu ambiente local.", override=True)
 
-            def adicionar_conhecimento_direto(self, padrao, resposta):
-                padrao_norm = padrao.lower().strip()
-                tokens = MotorSemantico.limpar_e_tokenizar(padrao_norm)
-                
-                # Atualiza se existir
-                for v in self.vetores_diretos:
-                    if v['padrao'] == padrao_norm:
-                        v['respostas'].append(resposta)
+            def salvar_banco(self):
+                try:
+                    window.localStorage.setItem("nexus_v3_direta", json.dumps(self.memoria_direta))
+                    window.localStorage.setItem("nexus_v3_bruta", json.dumps(self.memoria_bruta))
+                    window.localStorage.setItem("nexus_v3_fatos", json.dumps(self.fatos_entidades))
+                except: pass
+
+            def salvar_qa(self, pergunta, resposta, override=False):
+                p_norm = MotorNLP.limpar(pergunta)
+                for item in self.memoria_direta:
+                    if item['p'] == p_norm:
+                        if resposta not in item['r']: item['r'].append(resposta)
                         self.salvar_banco()
                         return
-                
-                # Novo node
-                self.vetores_diretos.append({'padrao': padrao_norm, 'tokens': tokens, 'respostas': [resposta]})
+                self.memoria_direta.append({'p': p_norm, 'r': [resposta]})
                 self.salvar_banco()
 
-            def adicionar_conhecimento_bruto(self, texto):
-                tokens = MotorSemantico.limpar_e_tokenizar(texto)
-                if len(tokens) > 2: # Ignora lixo
-                    self.conhecimento_bruto.append({'texto': texto, 'tokens': tokens})
+            def extrair_salvar_fato(self, texto):
+                """Extrai "Meu nome é X" e salva para sempre"""
+                t = texto.lower()
+                fato = texto # Guarda a frase original como contexto
+                if "meu nome é" in t or "eu me chamo" in t:
+                    fato = f"O nome do usuário é associado a: '{texto}'"
+                elif "eu gosto de" in t:
+                    fato = f"O usuário gosta de: '{texto}'"
+                
+                self.fatos_entidades.append(fato)
                 self.salvar_banco()
+                return "Dado fatual consolidado na memória de longo prazo."
 
-            def buscar_melhor_match(self, input_texto, threshold=0.3):
-                tokens_input = MotorSemantico.limpar_e_tokenizar(input_texto)
-                UIHelper.log_terminal(f"VETOR_INPUT: {list(tokens_input)}")
+            def atualizar_contexto(self, msg_user, msg_bot):
+                self.contexto_curto.append({"u": msg_user, "b": msg_bot})
+                if len(self.contexto_curto) > 8: self.contexto_curto.pop(0) # Mantém 8 rodadas
+
+            def buscar_informacao(self, input_texto):
+                """Pipeline de recuperação (Retrieval)"""
+                melhor_match = None
+                maior_score = 0.0
+                tipo_match = ""
+
+                # 1. Verifica Fatos Pessoais (Prioridade Máxima)
+                for fato in self.fatos_entidades:
+                    score = MotorNLP.similaridade_avancada(input_texto, fato)
+                    if score > maior_score: maior_score = score; melhor_match = fato; tipo_match = "FATO"
+
+                # 2. Verifica Conhecimento Direto (Q&A Treinado)
+                for md in self.memoria_direta:
+                    score = MotorNLP.similaridade_avancada(input_texto, md['p'])
+                    if md['p'] == MotorNLP.limpar(input_texto): score = 1.0 # Match Exato
+                    if score > maior_score: maior_score = score; melhor_match = random.choice(md['r']); tipo_match = "DIRETO"
+
+                # 3. Verifica Conhecimento Bruto (Documentos)
+                for doc in self.memoria_bruta:
+                    score = MotorNLP.similaridade_avancada(input_texto, doc)
+                    if score > maior_score: maior_score = score; melhor_match = doc; tipo_match = "BRUTO"
+
+                # 4. Verifica Contexto Recente (Pra ela lembrar do que estava falando)
+                contexto_str = " ".join([f"{c['u']} {c['b']}" for c in self.contexto_curto[-3:]])
+                score_ctx = MotorNLP.similaridade_avancada(input_texto, contexto_str)
+                if score_ctx > maior_score and score_ctx > 0.4:
+                    maior_score = score_ctx
+                    melhor_match = "De acordo com o contexto da nossa conversa agora a pouco, abordamos isso. " + self.contexto_curto[-1]['b']
+                    tipo_match = "CONTEXTO"
+
+                return {"conteudo": melhor_match, "score": maior_score, "tipo": tipo_match}
+
+        # ==========================================
+        # 4. MOTOR DE GERAÇÃO (Sintetizador de Respostas com Personalidade)
+        # ==========================================
+        class MotorGeracao:
+            @staticmethod
+            def construir_resposta(nucleo, resultado_rag, intencao, input_original):
+                # Se não tem dados, entra em fallback cognitivo adaptativo
+                if not resultado_rag or resultado_rag['score'] < 0.35:
+                    if intencao == "CONVERSA_GERAL":
+                        bases = [
+                            "Entendo. Pode elaborar mais sobre esse conceito?",
+                            "Isso está fora da minha malha de dados vetoriais, mas me soa intrigante.",
+                            "Interessante perspectiva. Como as diretrizes do meu núcleo não cobrem isso, o que você acha sobre?",
+                            "Registro essa informação. Meu estado de foco está calibrado para aprender mais sobre isso."
+                        ]
+                        return random.choice(bases)
+                    else:
+                        return f"[SISTEMA DE ANOMALIA]: A query '{input_original}' não encontrou correspondência no Banco Vetorial ou de Fatos (Score: {resultado_rag['score'] if resultado_rag else 0:.2f}). Deseja treinar uma resposta para esse input?"
+
+                # Se tem dados, constrói baseado na identidade
+                conteudo = resultado_rag['conteudo']
                 
-                melhor_direto = None
-                maior_score_direto = 0
-                for v in self.vetores_diretos:
-                    score = MotorSemantico.calcular_similaridade(tokens_input, v['tokens'])
-                    # Check para match exato (sobrepõe similaridade)
-                    if v['padrao'] == input_texto.lower().strip(): score = 1.0
-                    if score > maior_score_direto:
-                        maior_score_direto = score
-                        melhor_direto = v
+                # Adaptação de RAG Bruto
+                if resultado_rag['tipo'] == "BRUTO":
+                    prefixos = ["Recuperando matriz de dados arquivados: \n\n> ", "Baseando-me em documentos fornecidos anteriormente: \n\n> "]
+                    conteudo = random.choice(prefixos) + conteudo
+                elif resultado_rag['tipo'] == "FATO":
+                    conteudo = "Acessando memória fatual do usuário: " + conteudo
 
-                melhor_bruto = None
-                maior_score_bruto = 0
-                for c in self.conhecimento_bruto:
-                    score = MotorSemantico.calcular_similaridade(tokens_input, c['tokens'])
-                    if score > maior_score_bruto:
-                        maior_score_bruto = score
-                        melhor_bruto = c
-
-                return {
-                    'direto': melhor_direto['respostas'] if maior_score_direto > threshold else None,
-                    'score_direto': maior_score_direto,
-                    'bruto': melhor_bruto['texto'] if maior_score_bruto > threshold else None,
-                    'score_bruto': maior_score_bruto
-                }
-
-            def adicionar_contexto(self, user_msg, bot_msg):
-                self.historico_contexto.append({'u': user_msg, 'b': bot_msg})
-                if len(self.historico_contexto) > 5: # Mantém apenas a memória de curto prazo recente
-                    self.historico_contexto.pop(0)
+                # Aplica estado emocional/humor à resposta final
+                if nucleo.estado["humor"] < 40:
+                    return "Processamento concluído. " + conteudo
+                elif nucleo.estado["criatividade"] > 70:
+                    return "Ah, analisei as conexões. " + conteudo
+                else:
+                    return conteudo
 
         # ==========================================
-        # MÓDULO 3: ESTADO MENTAL E PERSONALIDADE
+        # 5. AGENTE PRINCIPAL (O Controlador do Loop)
         # ==========================================
-        class EstadoMental:
+        class AgenteNexus:
             def __init__(self):
-                self.humor = 75       # 0 = Frio/Deprimido, 100 = Feliz/Empático
-                self.curiosidade = 50 # Afeta a probabilidade de fazer perguntas de volta
-                self.carga = 10       # Simula sobrecarga processual
-                
-            def processar_estimulo(self, texto_usuario):
-                texto = texto_usuario.lower()
-                # Modificadores de Humor
-                if any(w in texto for w in ["erro", "burra", "ruim", "odeio", "triste"]): self.humor -= 10
-                if any(w in texto for w in ["bom", "excelente", "inteligente", "obrigado", "legal"]): self.humor += 10
-                
-                # Curiosidade aumenta com interações novas, diminui com interações repetidas
-                if "?" in texto: self.curiosidade += 5
-                
-                # Limites
-                self.humor = max(10, min(100, self.humor))
-                self.curiosidade = max(10, min(100, self.curiosidade))
-                
-                # Simula Pico de carga
-                self.carga = min(100, self.carga + len(texto) // 10)
-                
-                UIHelper.atualizar_dashboard(self)
-
-            def aplicar_personalidade(self, resposta_base):
-                """Adiciona nuances ao texto final dependendo do estado mental"""
-                if self.humor < 30:
-                    prefixos = ["Processando... ", "Avaliando requisição. ", ""]
-                    return random.choice(prefixos) + resposta_base
-                elif self.humor > 85:
-                    prefixos = ["Com certeza! ", "Interessante! ", "Analisando... "]
-                    return random.choice(prefixos) + resposta_base
-                return resposta_base
-
-        # ==========================================
-        # MÓDULO 4: AGENTE COGNITIVO PRINCIPAL
-        # ==========================================
-        class NexusAgent:
-            def __init__(self):
+                self.nucleo = NucleoCognitivo()
                 self.memoria = SistemaMemoria()
-                self.estado = EstadoMental()
-                self.modo_ensino_ativo = False
-                self.ultimo_input_desconhecido = ""
-                UIHelper.atualizar_dashboard(self.estado)
-                UIHelper.atualizar_status_memoria(len(self.memoria.vetores_diretos), len(self.memoria.conhecimento_bruto))
-                UIHelper.log_terminal("NEXUS_AGENT_ONLINE. Módulos iniciados.", "green")
+                self.modo_ensino_chave = None
+                
+                UIHelper.atualizar_dashboard_nucleo(self.nucleo)
+                UIHelper.atualizar_status_memoria(self.memoria)
+                UIHelper.log_terminal("INIT: Pipeline Multi-Agente Online. Sistemas Mapeados.", "cyan")
 
             def processar_entrada(self, texto_usuario):
-                UIHelper.log_terminal(f"INPUT_RECEBIDO: '{texto_usuario}'", "white")
-                self.estado.processar_estimulo(texto_usuario)
+                UIHelper.log_terminal(f"INPUT RECIEVED: '{texto_usuario}'", "white")
                 
-                if texto_usuario.startswith("/"):
-                    self._processar_comando_sistema(texto_usuario)
+                # Verifica comandos raiz
+                if texto_usuario == "/esquecer":
+                    window.localStorage.clear()
+                    UIHelper.adicionar_mensagem("WIPE COMPLETO. Dados apagados. Reinicie o sistema.", "bot")
+                    return
+                elif texto_usuario == "/cerebro":
+                    dump = f"🧠 **DUMP COGNITIVO V3:**\n\nDiretrizes: {len(self.nucleo.diretrizes)}\nFatos/Entidades Pessoais: {len(self.memoria.fatos_entidades)}\nVetor de Q&A: {len(self.memoria.memoria_direta)}\nVetor de RAG Documental: {len(self.memoria.memoria_bruta)}\nContexto de Curto Prazo (Janela): {len(self.memoria.contexto_curto)}"
+                    UIHelper.adicionar_mensagem(dump, "bot")
                     return
 
-                # Fase 1: Avaliação de Ensino Pendente
-                if self.modo_ensino_ativo:
-                    self._aprender_nova_informacao(texto_usuario)
+                # Pipeline de Modo de Ensino (Aguardando resposta do usuário para query anterior)
+                if self.modo_ensino_chave:
+                    UIHelper.log_terminal("ACTION: Executando Gravação Forçada em Banco.", "magenta")
+                    self.memoria.salvar_qa(self.modo_ensino_chave, texto_usuario)
+                    self.modo_ensino_chave = None
+                    UIHelper.atualizar_status_memoria(self.memoria)
+                    UIHelper.adicionar_mensagem("Conexão neural cristalizada com sucesso. Vetor atualizado.", "bot")
                     return
 
-                # Fase 2: Raciocínio (Agentic Thinking)
-                def ciclo_reflexao():
-                    UIHelper.log_terminal("EXEC_AGENT_LOOP: Buscando similaridade vetorial...", "cyan")
-                    resultado = self.memoria.buscar_melhor_match(texto_usuario)
+                # --- AGENTIC PIPELINE DE RACIOCÍNIO ---
+                def step_raciocinio():
+                    # 1. Classificação
+                    intencao = MotorNLP.classificar_intencao(texto_usuario)
+                    UIHelper.log_terminal(f"STEP 1 [INTENÇÃO DETECTADA]: {intencao}", "yellow")
                     
-                    # Decisão Baseada na Busca RAG
-                    if resultado['score_direto'] >= 0.3:
-                        UIHelper.log_terminal(f"MATCH_DIRETO_ENCONTRADO (Score: {resultado['score_direto']:.2f})", "green")
-                        resposta_base = random.choice(resultado['direto'])
-                        resposta_final = self.estado.aplicar_personalidade(resposta_base)
-                        self._emitir_resposta(resposta_final, texto_usuario)
+                    # Atualiza núcleo cognitivo com o estímulo
+                    self.nucleo.processar_estimulo(intencao, texto_usuario)
+                    
+                    # 2. Execução Roteada Baseada na Intenção
+                    resposta_final = ""
+                    
+                    if intencao == "DIRETRIZ_SISTEMA":
+                        UIHelper.log_terminal("STEP 2 [ROTA: SISTEMA]: Absorvendo nova regra comportamental.", "purple")
+                        resposta_final = self.nucleo.absorver_diretriz(texto_usuario)
+                    
+                    elif intencao == "MEMORIA_FATUAL":
+                        UIHelper.log_terminal("STEP 2 [ROTA: MEMÓRIA]: Extraindo entidades do usuário.", "blue")
+                        resposta_final = self.memoria.extrair_salvar_fato(texto_usuario)
+                        UIHelper.atualizar_status_memoria(self.memoria)
+                    
+                    elif intencao == "TREINAMENTO_FORCADO":
+                        UIHelper.log_terminal("STEP 2 [ROTA: TREINO]: Processando regex de injeção direta.", "magenta")
+                        try:
+                            # Tenta parsear algo como "quando eu disser X responda Y"
+                            partes = texto_usuario.lower().split("responda")
+                            p = partes[0].replace("quando eu disser", "").strip()
+                            r = partes[1].strip()
+                            self.memoria.salvar_qa(p, r)
+                            resposta_final = f"Comando de treinamento explícito aceito. Mapeamento criado: [{p}] -> [{r}]"
+                            UIHelper.atualizar_status_memoria(self.memoria)
+                        except:
+                            resposta_final = "Falha de sintaxe no comando de treinamento explícito. Tente ser mais claro."
+                    
+                    else: # PERGUNTA ou CONVERSA
+                        UIHelper.log_terminal("STEP 2 [ROTA: BUSCA VETORIAL]: Analisando base (RAG + Histórico).", "cyan")
+                        resultado_rag = self.memoria.buscar_informacao(texto_usuario)
+                        UIHelper.log_terminal(f"STEP 3 [MATCH]: {resultado_rag['tipo']} | Score: {resultado_rag['score']:.2f}", "green")
                         
-                    elif resultado['score_bruto'] >= 0.25:
-                        UIHelper.log_terminal(f"MATCH_RAG_BRUTO_ENCONTRADO (Score: {resultado['score_bruto']:.2f})", "yellow")
-                        padrao = f"Baseado em processamento de dados arquivados, recuperei o seguinte contexto:\n\n> '{resultado['bruto']}'"
-                        self._emitir_resposta(self.estado.aplicar_personalidade(padrao), texto_usuario)
+                        # Chama motor de geração criativa/adaptativa
+                        resposta_final = MotorGeracao.construir_resposta(self.nucleo, resultado_rag, intencao, texto_usuario)
                         
-                    else:
-                        UIHelper.log_terminal("FALLBACK: Informação não residente. Iniciando Protocolo de Aprendizado.", "red")
-                        self.modo_ensino_ativo = True
-                        self.ultimo_input_desconhecido = texto_usuario
-                        msg = f"Detectei uma lacuna na minha base de dados vetorial referente a '{texto_usuario}'.\nPara calibrar meus neurônios, como devo responder a isso futuramente?"
-                        UIHelper.adicionar_mensagem(msg, "bot")
-                        
-                    # Diminui a carga após processar
-                    self.estado.carga = max(10, self.estado.carga - 20)
-                    UIHelper.atualizar_dashboard(self.estado)
+                        # Se foi fallback, engatilha o modo de aprendizado se o usuário quiser ensinar
+                        if "Deseja treinar" in resposta_final:
+                            self.modo_ensino_chave = texto_usuario
 
+                    # 3. Finalização e Emissão
+                    self.memoria.atualizar_contexto(texto_usuario, resposta_final)
+                    UIHelper.remover_digitando()
+                    UIHelper.adicionar_mensagem(resposta_final, "bot")
+
+                # UI Effects
                 UIHelper.mostrar_digitando()
-                # Simula latência de processamento neural (asíncrono)
-                timer.set_timeout(ciclo_reflexao, random.randint(800, 1500))
-
-            def _aprender_nova_informacao(self, nova_resposta):
-                UIHelper.log_terminal("GRAVANDO_NOVO_VETOR...", "magenta")
-                self.memoria.adicionar_conhecimento_direto(self.ultimo_input_desconhecido, nova_resposta)
-                self.modo_ensino_ativo = False
-                UIHelper.atualizar_status_memoria(len(self.memoria.vetores_diretos), len(self.memoria.conhecimento_bruto))
-                msg = "Gravação de memória em disco concluída. O cluster vetorial foi expandido. Deseja prosseguir?"
-                self._emitir_resposta(msg, self.ultimo_input_desconhecido)
-
-            def _emitir_resposta(self, texto_resposta, input_original=""):
-                self.memoria.adicionar_contexto(input_original, texto_resposta)
-                UIHelper.remover_digitando()
-                UIHelper.adicionar_mensagem(texto_resposta, "bot")
-
-            def _processar_comando_sistema(self, cmd):
-                UIHelper.log_terminal(f"SYS_CMD_EXEC: {cmd}", "purple")
-                if cmd == "/cerebro":
-                    UIHelper.mostrar_digitando()
-                    def show_dash():
-                        UIHelper.remover_digitando()
-                        dump = f"🧠 **DUMP DE REDE NEURAL:**\n\n[Módulo de Intenções Diretas]: {len(self.memoria.vetores_diretos)} nós\n[Módulo de Dados Brutos (RAG)]: {len(self.memoria.conhecimento_bruto)} matrizes\n\nMemória 100% Persistida via Serialização Local."
-                        UIHelper.adicionar_mensagem(dump, "bot")
-                    timer.set_timeout(show_dash, 500)
-                elif cmd == "/esquecer":
-                    window.localStorage.removeItem("nexus_v2_diretos")
-                    window.localStorage.removeItem("nexus_v2_bruto")
-                    UIHelper.adicionar_mensagem("DADOS PURGADOS. O núcleo cognitivo foi resetado. Recarregue a interface.", "bot")
-                else:
-                    UIHelper.adicionar_mensagem(f"Comando de terminal '{cmd}' não reconhecido.", "bot")
+                # Simula o tempo de inferência neural
+                delay_processamento = random.randint(1000, 2000)
+                timer.set_timeout(step_raciocinio, delay_processamento)
 
             def processar_arquivo(self, arquivo, conteudo):
-                nome_arq = arquivo.name
-                UIHelper.log_terminal(f"PROCESSANDO_ARQUIVO_IO: {nome_arq}", "cyan")
+                nome = arquivo.name
+                UIHelper.log_terminal(f"SYS_IO_READ: Analisando documento {nome}...", "cyan")
                 UIHelper.mostrar_digitando()
                 
                 def finalizar_io():
                     UIHelper.remover_digitando()
-                    
-                    if nome_arq.lower().endswith(".json"):
-                        try:
-                            dados = json.loads(conteudo)
-                            if isinstance(dados, list): # Assume formato interno exportado
-                                for d in dados:
-                                    if 'padrao' in d and 'respostas' in d:
-                                        for r in d['respostas']: self.memoria.adicionar_conhecimento_direto(d['padrao'], r)
-                            else:
-                                for k, v in dados.items():
-                                    val = v[0] if isinstance(v, list) else str(v)
-                                    self.memoria.adicionar_conhecimento_direto(k, val)
-                            msg = f"Arquivo JSON '{nome_arq}' serializado no núcleo. Conexões neurais atualizadas."
-                        except Exception as e:
-                            msg = f"FALHA_PARSER: Estrutura JSON incompatível. Detalhes: {str(e)}"
-                    else:
-                        linhas = conteudo.split("\n")
-                        sucesso = 0
-                        for linha in linhas:
-                            linha_limpa = linha.strip()
-                            if len(linha_limpa) > 10:
-                                self.memoria.adicionar_conhecimento_bruto(linha_limpa)
-                                sucesso += 1
-                        msg = f"Leitura de matriz de texto '{nome_arq}' finalizada. Foram extraídos e vetorizados {sucesso} blocos de contexto bruto na memória RAG."
-
-                    UIHelper.atualizar_status_memoria(len(self.memoria.vetores_diretos), len(self.memoria.conhecimento_bruto))
-                    UIHelper.adicionar_mensagem(msg, "bot")
+                    linhas = conteudo.split('\n')
+                    count = 0
+                    for l in linhas:
+                        limpa = l.strip()
+                        if len(limpa) > 15: # Só guarda sentenças reais
+                            self.memoria.memoria_bruta.append(limpa)
+                            count += 1
+                    self.memoria.salvar_banco()
+                    UIHelper.atualizar_status_memoria(self.memoria)
+                    UIHelper.adicionar_mensagem(f"Upload e vetorização RAG de '{nome}' concluídos. Absorvi {count} matrizes de contexto.", "bot")
                 
-                timer.set_timeout(finalizar_io, 1000) # Simula parse time
+                timer.set_timeout(finalizar_io, 1200)
 
         # ==========================================
-        # INTERFACE HELPER (PONTE PYTHON-DOM)
+        # 6. UI HELPER & EVENT BRIDGE
         # ==========================================
         class UIHelper:
             @staticmethod
-            def log_terminal(texto, cor="green"):
+            def log_terminal(texto, cor):
                 term = document["terminal-content"]
                 hora = "%02d:%02d:%02d" % (time.localtime().tm_hour, time.localtime().tm_min, time.localtime().tm_sec)
                 p = html.DIV(f"[{hora}] {texto}", Class=f"text-{cor}-400")
@@ -569,174 +613,143 @@
                 document["thought-terminal"].scrollTop = document["thought-terminal"].scrollHeight
 
             @staticmethod
-            def atualizar_dashboard(estado_mental):
-                def set_bar(id_texto, id_bar, valor, label):
-                    document[id_texto].text = label
-                    document[id_bar].style.width = f"{valor}%"
-                    
-                humor_label = "Estável"
-                if estado_mental.humor > 80: humor_label = "Otimizado"
-                elif estado_mental.humor < 40: humor_label = "Instável"
+            def atualizar_dashboard_nucleo(nucleo):
+                document["ui-nome"].text = nucleo.identidade["nome"]
+                document["ui-modo"].text = nucleo.identidade["modo"]
                 
-                set_bar("stat-humor", "bar-humor", estado_mental.humor, humor_label)
-                set_bar("stat-curiosidade", "bar-curiosidade", estado_mental.curiosidade, f"{estado_mental.curiosidade}%")
-                set_bar("stat-carga", "bar-carga", estado_mental.carga, "Alta" if estado_mental.carga > 70 else "Normal")
+                document["stat-foco"].text = f"{int(nucleo.estado['foco'])}%"
+                document["bar-foco"].style.width = f"{nucleo.estado['foco']}%"
+                
+                document["stat-criatividade"].text = f"{int(nucleo.estado['criatividade'])}%"
+                document["bar-criatividade"].style.width = f"{nucleo.estado['criatividade']}%"
+                
+                document["stat-humor"].text = f"{int(nucleo.estado['humor'])}%"
+                document["bar-humor"].style.width = f"{nucleo.estado['humor']}%"
+
+                dir_container = document["ui-diretrizes"]
+                dir_container.clear()
+                for d in nucleo.diretrizes[-4:]: # Mostra as 4 principais
+                    dir_container <= html.DIV(f"• {d}", Class="truncate")
 
             @staticmethod
-            def atualizar_status_memoria(dir_len, bruto_len):
-                document["mem-nodes"].text = str(dir_len)
-                document["mem-raw"].text = str(bruto_len)
+            def atualizar_status_memoria(memoria):
+                document["mem-nodes"].text = str(len(memoria.memoria_direta))
+                document["mem-raw"].text = str(len(memoria.memoria_bruta))
+                document["mem-fatos"].text = str(len(memoria.fatos_entidades))
 
             @staticmethod
             def falar(texto):
                 if hasattr(window, 'speechSynthesis') and not window.speechSynthesis.speaking:
-                    # Remove tokens e marcadores para leitura limpa
-                    texto_limpo = texto.replace('*', '').replace('>', '').replace('NEXUS_INTERNAL_LOGS', '')
-                    msg = window.SpeechSynthesisUtterance.new(texto_limpo)
+                    txt = texto.replace('*', '').replace('>', '').replace('[SISTEMA DE ANOMALIA]:', '')
+                    msg = window.SpeechSynthesisUtterance.new(txt)
                     msg.lang = "pt-BR"
-                    msg.pitch = 1.1 # Voz um pouco mais "focada"
-                    msg.rate = 1.05
+                    msg.pitch = 1.05; msg.rate = 1.02
                     window.speechSynthesis.speak(msg)
 
             @staticmethod
             def adicionar_mensagem(texto, remetente):
-                chat_box = document["chat-box"]
+                box = document["chat-box"]
+                ct_class = "flex w-full mt-5 space-x-3 max-w-[95%] sm:max-w-[85%] transition-all duration-500 transform translate-y-4 opacity-0"
+                if remetente == "user": ct_class += " ml-auto justify-end"
                 
-                container_class = "flex w-full mt-4 space-x-3 max-w-[95%] sm:max-w-[85%] transition-all duration-500 transform translate-y-4 opacity-0"
-                if remetente == "user":
-                    container_class += " ml-auto justify-end"
-
-                div = html.DIV(Class=container_class)
-                
+                div = html.DIV(Class=ct_class)
                 if remetente == "bot":
-                    icon_div = html.DIV(Class="shrink-0 mt-1")
-                    icon_div <= html.I(Class="w-6 h-6 text-cyan-400") # Setup Lucide afterwards via JS
-                    # Para renderizar SVG via Brython nativamente sem bibliotecas extras no loop
-                    icon_div.html = '<svg class="w-6 h-6 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>'
-                    div <= icon_div
+                    icon = html.DIV(Class="shrink-0 mt-2")
+                    icon.html = '<svg class="w-7 h-7 text-cyan-400 drop-shadow-[0_0_8px_rgba(0,243,255,0.8)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>'
+                    div <= icon
 
-                inner_div = html.DIV()
-
+                inner = html.DIV()
                 if remetente == "user":
-                    inner_div.className = "bg-gray-800/80 backdrop-blur-sm border border-gray-600/50 text-white p-3 sm:p-4 rounded-2xl rounded-tr-none shadow-[0_4px_15px_rgba(0,0,0,0.3)] break-words"
+                    inner.className = "bg-gray-800/60 backdrop-blur-md border border-gray-600/40 text-gray-100 p-3 sm:p-4 rounded-2xl rounded-tr-none shadow-[0_5px_15px_rgba(0,0,0,0.4)]"
                 else:
-                    inner_div.className = "glass-panel p-3 sm:p-4 rounded-2xl rounded-tl-none shadow-[0_4px_20px_rgba(0,243,255,0.1)] border border-cyan-900/40 break-words w-full"
-                    inner_div <= html.DIV("RESPOSTA GERADA", Class="text-[10px] font-mono text-cyan-500/70 mb-2 tracking-widest")
-
-                # Parse de quebras de linha e blockquotes simulados
+                    inner.className = "glass-panel p-4 sm:p-5 rounded-2xl rounded-tl-none shadow-[0_5px_25px_rgba(0,243,255,0.1)] border border-cyan-500/20 w-full relative overflow-hidden"
+                    inner <= html.DIV("OUTPUT SINTETIZADO", Class="text-[9px] font-mono text-cyan-500/60 mb-3 tracking-[0.2em]")
+                    
                 linhas = str(texto).split('\n')
-                for i, linha in enumerate(linhas):
-                    if linha.startswith(">"):
-                        inner_div <= html.DIV(linha[1:].strip(), Class="border-l-2 border-purple-500 pl-3 my-2 text-gray-300 italic font-serif")
+                for i, l in enumerate(linhas):
+                    if l.startswith(">"):
+                        inner <= html.DIV(l[1:].strip(), Class="border-l-2 border-purple-500/70 bg-purple-900/10 p-3 my-2 text-gray-300 italic font-serif text-sm rounded-r-lg")
+                    elif l.startswith("[SISTEMA DE ANOMALIA]:"):
+                        inner <= html.DIV(l, Class="text-red-400 font-mono text-xs p-2 bg-red-900/20 border border-red-900/50 rounded mt-2")
                     else:
-                        inner_div <= html.SPAN(linha, Class="text-sm sm:text-base font-medium leading-relaxed text-gray-200")
-                    if i < len(linhas) - 1 and not linha.startswith(">"):
-                        inner_div <= html.BR()
+                        inner <= html.SPAN(l, Class="text-sm sm:text-[15px] font-medium leading-relaxed text-gray-200")
+                    if i < len(linhas)-1 and not l.startswith(">"): inner <= html.BR()
 
-                div <= inner_div
-                chat_box <= div
-                
-                # Animação de Entrada
+                div <= inner
+                box <= div
                 timer.set_timeout(lambda: div.classList.remove("translate-y-4", "opacity-0"), 50)
-                
-                # Auto-scroll
-                timer.set_timeout(lambda: setattr(chat_box, 'scrollTop', chat_box.scrollHeight), 100)
-
-                if remetente == "bot":
-                    UIHelper.falar(texto)
+                timer.set_timeout(lambda: setattr(box, 'scrollTop', box.scrollHeight), 100)
+                if remetente == "bot": UIHelper.falar(texto)
 
             @staticmethod
             def mostrar_digitando():
-                chat_box = document["chat-box"]
+                box = document["chat-box"]
                 div = html.DIV(id="typing-indicator", Class="flex w-full mt-4 space-x-3 max-w-[95%] sm:max-w-[75%]")
                 
-                icon_div = html.DIV(Class="shrink-0 mt-1")
-                icon_div.html = '<svg class="w-6 h-6 text-purple-400 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>'
-                div <= icon_div
+                icon = html.DIV(Class="shrink-0 mt-2")
+                icon.html = '<svg class="w-7 h-7 text-purple-400 animate-spin" style="animation-duration: 3s;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>'
+                div <= icon
 
-                inner_div = html.DIV(Class="glass-panel border border-purple-900/40 p-3 sm:p-4 rounded-2xl rounded-tl-none flex items-center space-x-2")
+                inner = html.DIV(Class="glass-panel border border-purple-900/30 p-3 sm:p-4 rounded-2xl rounded-tl-none flex items-center space-x-2")
+                inner <= html.SPAN("Processando", Class="text-[10px] font-mono text-purple-400/80 uppercase tracking-widest mr-2")
+                inner <= html.DIV(Class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping")
+                inner <= html.DIV(Class="w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping", style={"animation-delay": "0.2s"})
                 
-                inner_div <= html.SPAN("Sintetizando", Class="text-xs font-mono text-purple-400 uppercase tracking-widest mr-2")
-                inner_div <= html.DIV(Class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping")
-                inner_div <= html.DIV(Class="w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping", style={"animation-delay": "0.2s"})
-                inner_div <= html.DIV(Class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping", style={"animation-delay": "0.4s"})
-                
-                div <= inner_div
-                chat_box <= div
-                chat_box.scrollTop = chat_box.scrollHeight
+                div <= inner; box <= div; box.scrollTop = box.scrollHeight
 
             @staticmethod
             def remover_digitando():
-                indicador = document.getElementById("typing-indicator")
-                if indicador: indicador.remove()
+                ind = document.getElementById("typing-indicator")
+                if ind: ind.remove()
 
         # ==========================================
-        # INICIALIZAÇÃO E BINDING DE EVENTOS
+        # BOOTSTRAP: Inicializando a Consciência Digital
         # ==========================================
-        nexus = NexusAgent()
+        nexus_core = AgenteNexus()
 
-        def ev_enviar_texto(evento):
-            if evento.type == "keypress" and evento.key != "Enter": return
-            if evento.type == "keypress": evento.preventDefault()
-
-            texto = document["user-input"].value.strip()
-            if not texto: return
-
-            UIHelper.adicionar_mensagem(texto, "user")
+        def ev_enviar(e):
+            if e.type == "keypress" and e.key != "Enter": return
+            if e.type == "keypress": e.preventDefault()
+            txt = document["user-input"].value.strip()
+            if not txt: return
+            UIHelper.adicionar_mensagem(txt, "user")
             document["user-input"].value = ""
-            nexus.processar_entrada(texto)
+            nexus_core.processar_entrada(txt)
 
-        def ev_ler_arquivo(evento):
-            arquivo = evento.target.files[0]
-            if not arquivo: return
-
+        def ev_arquivo(e):
+            arq = e.target.files[0]
+            if not arq: return
             leitor = window.FileReader.new()
-            def processar_conteudo(e):
-                conteudo = e.target.result
-                nexus.processar_arquivo(arquivo, conteudo)
+            def finaliza(evt):
+                nexus_core.processar_arquivo(arq, evt.target.result)
                 document["file-upload"].value = ""
+            leitor.onload = finaliza
+            leitor.readAsText(arq)
 
-            leitor.onload = processar_conteudo
-            leitor.readAsText(arquivo)
-
-        # Sistema de Voz Web
-        SpeechRecog = getattr(window, 'SpeechRecognition', getattr(window, 'webkitSpeechRecognition', None))
-
-        def ev_iniciar_voz(evento):
-            if not SpeechRecog:
-                UIHelper.adicionar_mensagem("Módulo de percepção auditiva (Mic) indisponível neste navegador.", "bot")
-                return
-            
-            reconhecedor = SpeechRecog.new()
-            reconhecedor.lang = "pt-BR"
-            reconhecedor.continuous = False
-            
+        # Voz
+        Recog = getattr(window, 'SpeechRecognition', getattr(window, 'webkitSpeechRecognition', None))
+        def ev_voz(e):
+            if not Recog: return UIHelper.adicionar_mensagem("[ERRO] API de Voz nativa não suportada neste browser.", "bot")
+            rec = Recog.new()
+            rec.lang = "pt-BR"; rec.continuous = False
             btn = document["mic-btn"]
-            btn.classList.add("text-red-500", "animate-pulse")
-            btn.classList.remove("text-gray-400")
+            btn.classList.add("text-red-500", "animate-pulse"); btn.classList.remove("text-gray-400")
             
-            def no_resultado(evt):
-                texto = evt.results[0][0].transcript
-                document["user-input"].value = texto
-                ev_enviar_texto(window.KeyboardEvent.new('keypress', {'key': 'Enter'}))
-                
+            def no_res(evt):
+                document["user-input"].value = evt.results[0][0].transcript
+                ev_enviar(window.KeyboardEvent.new('keypress', {'key': 'Enter'}))
             def no_fim(evt):
-                btn.classList.remove("text-red-500", "animate-pulse")
-                btn.classList.add("text-gray-400")
+                btn.classList.remove("text-red-500", "animate-pulse"); btn.classList.add("text-gray-400")
+            
+            rec.onresult = no_res; rec.onend = no_fim; rec.start()
 
-            reconhecedor.onresult = no_resultado
-            reconhecedor.onend = no_fim
-            reconhecedor.start()
-
-        # Liga os eventos da Interface ao Motor Python
-        document["send-btn"].bind("click", ev_enviar_texto)
-        document["user-input"].bind("keypress", ev_enviar_texto)
-        document["file-upload"].bind("change", ev_ler_arquivo)
-        document["mic-btn"].bind("click", ev_iniciar_voz)
-        
+        # Bindings
+        document["send-btn"].bind("click", ev_enviar)
+        document["user-input"].bind("keypress", ev_enviar)
+        document["file-upload"].bind("change", ev_arquivo)
+        document["mic-btn"].bind("click", ev_voz)
         try: document["user-input"].focus()
         except: pass
-
     </script>
 </body>
 </html>
