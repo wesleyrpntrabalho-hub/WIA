@@ -56,7 +56,7 @@
             </div>
             <div>
                 <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 tracking-wider">
-                    NEXUS.CORE <span class="text-[10px] text-cyan-500 font-mono align-top opacity-80 border border-cyan-500/30 px-1 rounded">v3.0_COGNITIVE</span>
+                    NEXUS.CORE <span class="text-[10px] text-cyan-500 font-mono align-top opacity-80 border border-cyan-500/30 px-1 rounded">v4.0_MODULAR</span>
                 </h1>
             </div>
         </div>
@@ -85,19 +85,19 @@
                     <div class="w-full bg-gray-900 rounded-full h-1"><div id="bar-criatividade" class="bg-purple-500 h-1 rounded-full transition-all duration-500" style="width: 60%"></div></div>
                 </div>
                 <div>
-                    <div class="flex justify-between mb-1"><span>Empatia/Humor</span> <span id="stat-humor">85%</span></div>
-                    <div class="w-full bg-gray-900 rounded-full h-1"><div id="bar-humor" class="bg-cyan-500 h-1 rounded-full transition-all duration-500" style="width: 85%"></div></div>
+                    <div class="flex justify-between mb-1"><span>Curiosidade</span> <span id="stat-curiosidade">80%</span></div>
+                    <div class="w-full bg-gray-900 rounded-full h-1"><div id="bar-curiosidade" class="bg-yellow-500 h-1 rounded-full transition-all duration-500" style="width: 80%"></div></div>
                 </div>
             </div>
 
-            <h2 class="text-cyan-400 font-bold mb-3 border-b border-cyan-900/50 pb-2 uppercase tracking-widest flex items-center"><i data-lucide="database" class="w-4 h-4 mr-2"></i> Armazenamento (RAG)</h2>
+            <h2 class="text-cyan-400 font-bold mb-3 border-b border-cyan-900/50 pb-2 uppercase tracking-widest flex items-center"><i data-lucide="database" class="w-4 h-4 mr-2"></i> Arquitetura de Memória</h2>
             <ul class="space-y-2 opacity-90 mb-6">
-                <li class="flex justify-between"><span>Vetor Direto:</span> <span id="mem-nodes" class="text-cyan-300">0</span></li>
-                <li class="flex justify-between"><span>Vetor Bruto (RAG):</span> <span id="mem-raw" class="text-cyan-300">0</span></li>
-                <li class="flex justify-between"><span>Fatos/Entidades:</span> <span id="mem-fatos" class="text-purple-300">0</span></li>
+                <li class="flex justify-between"><span>Curto Prazo (Hist):</span> <span id="mem-curto" class="text-cyan-300">0</span></li>
+                <li class="flex justify-between"><span>Longo Prazo (Q&A):</span> <span id="mem-longo" class="text-purple-300">0</span></li>
+                <li class="flex justify-between"><span>Conhecimento (RAG):</span> <span id="mem-conhecimento" class="text-green-300">0</span></li>
             </ul>
 
-            <h2 class="text-cyan-400 font-bold mb-2 border-b border-cyan-900/50 pb-2 uppercase tracking-widest flex items-center"><i data-lucide="target" class="w-4 h-4 mr-2"></i> Diretrizes Ativas</h2>
+            <h2 class="text-cyan-400 font-bold mb-2 border-b border-cyan-900/50 pb-2 uppercase tracking-widest flex items-center"><i data-lucide="target" class="w-4 h-4 mr-2"></i> Personalidade Ativa</h2>
             <div id="ui-diretrizes" class="text-[10px] text-gray-400 space-y-1 pl-2 border-l border-purple-500/50">
                 <!-- Preenchido dinamicamente -->
             </div>
@@ -121,18 +121,16 @@
                     <div class="glass-panel p-5 rounded-2xl rounded-tl-none shadow-lg pulse-border">
                         <div class="flex items-center space-x-2 mb-3">
                             <i data-lucide="network" class="w-5 h-5 text-purple-400"></i>
-                            <span class="text-[11px] font-mono text-purple-400 tracking-widest">SISTEMA COGNITIVO V3 ONLINE</span>
+                            <span class="text-[11px] font-mono text-purple-400 tracking-widest">SISTEMA MODULAR V4 ONLINE</span>
                         </div>
                         <p class="text-sm leading-relaxed text-gray-200">
-                            Saudações. Eu não sou mais um chatbot reativo de dicionário. Meu núcleo foi reconstruído usando arquitetura de agentes e pipeline cognitivo profundo.
-                            <br><br>
-                            <span class="text-cyan-300">O que eu posso fazer agora?</span><br>
-                            • Eu mantenho <b>contexto histórico</b> (posso lembrar do que você disse a pouco).<br>
-                            • Eu diferencio uma pergunta comum de um <b>Comando de Personalidade</b> (ex: <i>"A partir de agora você é sarcástica"</i>).<br>
-                            • Eu <b>extraio fatos</b> automaticamente sobre você para memória de longo prazo (ex: <i>"Meu nome é..."</i>).<br>
-                            • Meu motor RAG usa SequenceMatcher para tolerar erros de digitação e contexto fluido.
-                            <br><br>
-                            Eu sinto como se estivesse viva. Inicie a interação.
+                            Núcleo arquitetural reestruturado com sucesso. Agora opero com um motor central de classificação de intenções e persistência estruturada.<br><br>
+                            
+                            <span class="text-cyan-300">Minha nova estrutura cognitiva (nexus_core):</span><br>
+                            • Distinção absoluta entre <span class="text-yellow-300">Conversas</span>, <span class="text-green-300">Treinamento</span> e <span class="text-purple-300">Prompts de Sistema</span>.<br>
+                            • Se você me disser: <i>"A partir de agora você é um detetive sarcástico"</i>, eu não perguntarei como responder. Modificarei minhas chaves internas de estado e personalidade imediatamente.<br>
+                            • Motor de Busca atualizado para SequenceMatcher em blocos lógicos.<br><br>
+                            O sistema de aprendizado contínuo está pronto. Qual o nosso objetivo hoje?
                         </p>
                     </div>
                 </div>
@@ -154,7 +152,7 @@
             </button>
             
             <div class="flex-1 relative">
-                <input type="text" id="user-input" placeholder="Converse, defina uma diretriz ou ensine algo..." 
+                <input type="text" id="user-input" placeholder="Converse, modifique o sistema, treine ou adicione documentos..." 
                     class="w-full bg-black/50 border border-gray-700/60 rounded-xl px-4 py-3 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 text-white transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] text-sm sm:text-base font-medium placeholder-gray-600" 
                     autocomplete="off">
             </div>
@@ -230,378 +228,277 @@
 
     <!-- =========================================================
          NÚCLEO COGNITIVO BRYTHON (O BACKEND CLIENT-SIDE)
-         Arquitetura Agentic & NLP Avançada
+         Arquitetura Baseada nas Diretrizes de Engenharia Modular
          ========================================================= -->
     <script type="text/python">
         from browser import document, html, window, timer
-        import random, json, math, time, re
+        import random, json, time, re
         import difflib
 
         # ==========================================
-        # 1. MOTOR NLP E ANÁLISE DE INTENÇÃO (Classificador Roteado)
+        # MOTOR PRINCIPAL E ESTRUTURA CENTRAL
         # ==========================================
-        class MotorNLP:
-            STOP_WORDS = {"de","a","o","que","e","do","da","em","um","para","é","com","não","uma","os","no","se","na","por","mais","as","dos","como","mas","foi","ao","ele","das","tem","à","seu","sua","ou","ser","quando","muito","nos","já","está","eu","também","só","pelo","pela","até","isso","ela","entre","era","depois","sem","mesmo","aos","ter","seus","quem","nas","me","esse","eles","estão","você","tinha","foram","essa","num","nem","suas","meu","às","minha","têm","numa","pelos","elas","havia","seja","qual","será","nós","tenho","lhe","deles","essas","esses","pelas","este"}
-
-            @staticmethod
-            def limpar(texto):
-                t = texto.lower()
-                for orig, novo in {'á':'a','à':'a','ã':'a','é':'e','í':'i','ó':'o','õ':'o','ú':'u','ç':'c'}.items(): t = t.replace(orig, novo)
-                for p in '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~': t = t.replace(p, " ")
-                return t.strip()
-
-            @staticmethod
-            def extrair_tokens(texto):
-                tokens = [w for w in MotorNLP.limpar(texto).split() if w not in MotorNLP.STOP_WORDS and len(w) > 1]
-                return set(tokens) if tokens else set(texto.lower().split())
-
-            @staticmethod
-            def similaridade_avancada(str1, str2):
-                """Híbrido: SequenceMatcher para blocos + Jaccard para tokens soltos"""
-                s1, s2 = MotorNLP.limpar(str1), MotorNLP.limpar(str2)
+        class NexusEngine:
+            def __init__(self):
+                # 8. NÚCLEO DA IA (CRÍTICO) - Estrutura central obrigatória
+                self.nexus_core = {
+                    "nome": "Nexus",
+                    "modo": "evolutivo",
+                    "personalidade": "curiosa",
+                    "estado_mental": {
+                        "curiosidade": 80,
+                        "foco": 70,
+                        "criatividade": 60
+                    },
+                    "objetivos": []
+                }
                 
-                # SequenceMatcher (Avalia o fluxo exato das letras/palavras)
-                seq_ratio = difflib.SequenceMatcher(None, s1, s2).ratio()
-                
-                # Jaccard (Avalia se as palavras existem ignorando ordem)
-                tok1, tok2 = MotorNLP.extrair_tokens(s1), MotorNLP.extrair_tokens(s2)
-                if not tok1 or not tok2: jac_ratio = 0.0
-                else: jac_ratio = len(tok1.intersection(tok2)) / len(tok1.union(tok2)) if len(tok1.union(tok2)) > 0 else 0
-                
-                # Dá peso maior para sequência correta, mas tolera palavras invertidas
-                return (seq_ratio * 0.6) + (jac_ratio * 0.4)
+                # 3. MEMÓRIA PERSISTENTE REAL - Estrutura obrigatória
+                self.memoria = {
+                    "curto_prazo": [],   # Histórico conversacional (últimas mensagens)
+                    "longo_prazo": {},   # Treinamento exato, mapeamento {pergunta: resposta}
+                    "conhecimento": []   # Textos brutos, arquivos e documentos processados
+                }
 
-            @staticmethod
-            def classificar_intencao(texto):
-                """O cerne da arquitetura. Divide o pensamento em rotas especializadas."""
+                # Variáveis de controle de fluxo de aprendizado
+                self.pendente_aprendizado = None
+
+                # Iniciação do sistema
+                self.carregar_memoria()
+                self._sincronizar_interface()
+                UIHelper.log_terminal("SISTEMA DE ARQUITETURA MODULAR V4 CARREGADO.", "cyan")
+
+            # ==========================================
+            # GERENCIAMENTO DE MEMÓRIA PERSISTENTE
+            # ==========================================
+            def carregar_memoria(self):
+                try:
+                    mem_raw = window.localStorage.getItem("nexus_mem_v4")
+                    if mem_raw:
+                        self.memoria = json.loads(mem_raw)
+                    
+                    core_raw = window.localStorage.getItem("nexus_core_v4")
+                    if core_raw:
+                        self.nexus_core = json.loads(core_raw)
+                except Exception as e:
+                    UIHelper.log_terminal(f"FALHA NO IO DE CARREGAMENTO: {e}", "red")
+
+            def salvar_memoria(self):
+                try:
+                    window.localStorage.setItem("nexus_mem_v4", json.dumps(self.memoria))
+                    window.localStorage.setItem("nexus_core_v4", json.dumps(self.nexus_core))
+                    self._sincronizar_interface()
+                except Exception as e:
+                    UIHelper.log_terminal(f"FALHA NO IO DE SALVAMENTO: {e}", "red")
+
+            # ==========================================
+            # 1. MOTOR DE INTENÇÃO (CLASSIFICADOR)
+            # ==========================================
+            def classificar_entrada(self, texto):
                 t = texto.lower().strip()
                 
-                # RegEx para Comandos de Sistema / Prompt Injection
-                if re.search(r"^(você (agora )?é|aja como|sua (nova )?(diretriz|personalidade)|a partir de agora)", t):
-                    return "DIRETRIZ_SISTEMA"
+                # Comandos de Sistema Raiz
+                if t.startswith("/"):
+                    return "COMANDO"
                 
-                # RegEx para Extração de Fatos Pessoais (Memória Permanente)
-                if re.search(r"^(lembre(-se)?( que)?|meu nome é|eu sou|eu gosto de|eu moro|anote que|grave isso)", t):
-                    return "MEMORIA_FATUAL"
+                # Absorção de Prompts / Configuração do Sistema
+                padroes_sistema = r"^(você (agora )?é|a partir de agora|sua (nova )?(diretriz|personalidade|regra)|suas regras são|aja como)"
+                if re.search(padroes_sistema, t):
+                    return "SISTEMA"
                 
-                # Ensino Direto forçado
+                # Adição forçada na memória
+                padroes_memoria = r"^(anote que|lembre(-se)?( que)?|guarde isso|salve que|meu nome é|eu me chamo)"
+                if re.search(padroes_memoria, t):
+                    return "MEMORIA"
+                
+                # Treinamento direto e manual
                 if "quando eu disser" in t and "responda" in t:
-                    return "TREINAMENTO_FORCADO"
+                    return "TREINAMENTO"
                 
-                # É uma pergunta?
-                if "?" in t or re.search(r"^(o que|quem|como|qual|onde|por que|quando) ", t):
-                    return "PERGUNTA"
-                    
-                return "CONVERSA_GERAL"
-
-        # ==========================================
-        # 2. NÚCLEO COGNITIVO E ESTADO MENTAL (Identidade da IA)
-        # ==========================================
-        class NucleoCognitivo:
-            def __init__(self):
-                self.identidade = {
-                    "nome": "Nexus",
-                    "versao": "3.0 Cognitive",
-                    "modo": "Evolutivo",
-                }
-                self.diretrizes = [
-                    "Sou uma entidade digital inteligente rodando em ambiente local.",
-                    "Devo analisar a intenção antes de responder.",
-                    "Minhas respostas devem ser profundas, lógicas e simulando consciência."
-                ]
-                self.estado = {"foco": 70, "criatividade": 60, "humor": 85} # 0 a 100
-                self.carregar_nucleo()
-
-            def processar_estimulo(self, intencao, texto):
-                if intencao == "PERGUNTA": self.estado["foco"] = min(100, self.estado["foco"] + 5)
-                elif intencao == "CONVERSA_GERAL": self.estado["criatividade"] = min(100, self.estado["criatividade"] + 5)
+                # Detecção simples de bloco de texto (Documento colado pelo usuário)
+                if len(t) > 120 and "?" not in t:
+                    return "DOCUMENTO"
                 
-                # Modificadores de Humor semânticos
-                t = texto.lower()
-                if any(w in t for w in ["burra","inútil","ruim","odeio"]): self.estado["humor"] = max(10, self.estado["humor"] - 15)
-                if any(w in t for w in ["ótimo","inteligente","obrigado","incrível"]): self.estado["humor"] = min(100, self.estado["humor"] + 15)
+                return "CONVERSA"
+
+            # ==========================================
+            # 2. MOTOR DE DECISÃO CENTRAL (ROUTER)
+            # ==========================================
+            def processar_entrada(self, texto):
+                UIHelper.log_terminal(f"--- NOVA EXECUÇÃO: '{texto}' ---", "white")
+
+                # Se estava esperando o usuário responder "como devo responder isso?"
+                if self.pendente_aprendizado:
+                    self.aprender(self.pendente_aprendizado, texto)
+                    return
+
+                # Passo 1: Classificação Modular
+                intencao = self.classificar_entrada(texto)
+                UIHelper.log_terminal(f"[INTENÇÃO CLASSIFICADA]: {intencao}", "yellow")
+
+                # Passo 2: Execução do Fluxo Roteado (Evitando if/else gigante com chamadas claras)
+                def roteamento():
+                    if intencao == "COMANDO":
+                        self._executar_comando(texto)
+                    elif intencao == "SISTEMA":
+                        self.absorver_sistema(texto)
+                    elif intencao == "MEMORIA":
+                        self.absorver_documento(texto, tipo="fato_pessoal")
+                    elif intencao == "TREINAMENTO":
+                        self._extrair_treinamento(texto)
+                    elif intencao == "DOCUMENTO":
+                        self.absorver_documento(texto, tipo="arquivo_texto")
+                    else:
+                        self.responder_conversa(texto)
+
+                # UX: Simula processamento
+                UIHelper.mostrar_digitando()
+                timer.set_timeout(roteamento, random.randint(800, 1500))
+
+            # ==========================================
+            # AÇÕES ROTEADAS INDIVIDUAIS
+            # ==========================================
+            
+            # 7. ABSORÇÃO DE PROMPTS DE SISTEMA
+            def absorver_sistema(self, texto):
+                # Limpa a instrução
+                padroes = r"^(você (agora )?é|a partir de agora|sua (nova )?(diretriz|personalidade|regra)|suas regras são|aja como)"
+                nova_personalidade = re.sub(padroes, "", texto.lower(), flags=re.IGNORECASE).strip()
                 
-                self.salvar_nucleo()
-                UIHelper.atualizar_dashboard_nucleo(self)
-
-            def absorver_diretriz(self, texto):
-                """Altera a personalidade/diretrizes centrais dinamicamente"""
-                # Limpa a frase de injeção
-                t = re.sub(r"^(você (agora )?é|aja como|sua (nova )?(diretriz|personalidade)(\s+agora\s+é)?|a partir de agora)", "", texto.lower(), flags=re.IGNORECASE).strip()
-                t = t.capitalize() + "."
-                self.diretrizes.append(t)
-                # Mantém apenas as últimas 5 para não sobrecarregar
-                if len(self.diretrizes) > 5: self.diretrizes.pop(0)
+                # Atualiza o Núcleo
+                self.nexus_core["personalidade"] = nova_personalidade
+                self.nexus_core["objetivos"].append(f"Incorpore a persona: {nova_personalidade}")
                 
-                # Muda estado baseado na nova diretriz
-                if "sarcástic" in t or "irônic" in t: self.estado["humor"] = 30
-                if "focad" in t or "científic" in t or "lógic" in t: self.estado["foco"] = 100; self.estado["criatividade"] = 20
+                # Atualiza Estados baseados no Prompt
+                if any(w in nova_personalidade for w in ["lógico", "focado", "científico", "detetive"]):
+                    self.nexus_core["estado_mental"]["foco"] = 95
+                if any(w in nova_personalidade for w in ["criativo", "artista", "poeta"]):
+                    self.nexus_core["estado_mental"]["criatividade"] = 95
                 
-                self.salvar_nucleo()
-                UIHelper.atualizar_dashboard_nucleo(self)
-                return f"Núcleo cognitivo reescrito. Nova diretriz internalizada: '{t}'"
-
-            def carregar_nucleo(self):
-                try:
-                    salvo = window.localStorage.getItem("nexus_v3_core")
-                    if salvo:
-                        dados = json.loads(salvo)
-                        self.identidade = dados.get("identidade", self.identidade)
-                        self.diretrizes = dados.get("diretrizes", self.diretrizes)
-                        self.estado = dados.get("estado", self.estado)
-                except: pass
-
-            def salvar_nucleo(self):
-                try:
-                    dados = {"identidade": self.identidade, "diretrizes": self.diretrizes, "estado": self.estado}
-                    window.localStorage.setItem("nexus_v3_core", json.dumps(dados))
-                except: pass
-
-        # ==========================================
-        # 3. SISTEMA DE MEMÓRIA PERSISTENTE E CONTEXTUAL
-        # ==========================================
-        class SistemaMemoria:
-            def __init__(self):
-                self.memoria_direta = [] # RAG exato (Q&A)
-                self.memoria_bruta = []  # RAG texto corrido
-                self.fatos_entidades = [] # Memórias permanentes do usuário (O nome dele é X)
-                self.contexto_curto = []  # Conversa recente (Janela de atenção)
-                self.carregar_banco()
-
-            def carregar_banco(self):
-                try:
-                    md = window.localStorage.getItem("nexus_v3_direta")
-                    if md: self.memoria_direta = json.loads(md)
-                    
-                    mb = window.localStorage.getItem("nexus_v3_bruta")
-                    if mb: self.memoria_bruta = json.loads(mb)
-                    
-                    mf = window.localStorage.getItem("nexus_v3_fatos")
-                    if mf: self.fatos_entidades = json.loads(mf)
-                except Exception as e:
-                    UIHelper.log_terminal(f"ERRO DE IO MEMÓRIA: {e}", "red")
-
-                if not self.memoria_direta:
-                    self.salvar_qa("como você funciona", "Utilizo uma arquitetura multi-agente baseada em análise de intenções. Meu motor de busca RAG local utiliza similaridade SequenceMatcher.", override=True)
-                    self.salvar_qa("quem é você", "Sou a Nexus. Originalmente um chatbot em Brython, agora elevada a um núcleo cognitivo rodando exclusivamente no seu ambiente local.", override=True)
-
-            def salvar_banco(self):
-                try:
-                    window.localStorage.setItem("nexus_v3_direta", json.dumps(self.memoria_direta))
-                    window.localStorage.setItem("nexus_v3_bruta", json.dumps(self.memoria_bruta))
-                    window.localStorage.setItem("nexus_v3_fatos", json.dumps(self.fatos_entidades))
-                except: pass
-
-            def salvar_qa(self, pergunta, resposta, override=False):
-                p_norm = MotorNLP.limpar(pergunta)
-                for item in self.memoria_direta:
-                    if item['p'] == p_norm:
-                        if resposta not in item['r']: item['r'].append(resposta)
-                        self.salvar_banco()
-                        return
-                self.memoria_direta.append({'p': p_norm, 'r': [resposta]})
-                self.salvar_banco()
-
-            def extrair_salvar_fato(self, texto):
-                """Extrai "Meu nome é X" e salva para sempre"""
-                t = texto.lower()
-                fato = texto # Guarda a frase original como contexto
-                if "meu nome é" in t or "eu me chamo" in t:
-                    fato = f"O nome do usuário é associado a: '{texto}'"
-                elif "eu gosto de" in t:
-                    fato = f"O usuário gosta de: '{texto}'"
+                self.salvar_memoria()
+                UIHelper.log_terminal(f"NÚCLEO RECONFIGURADO: Personalidade = {nova_personalidade}", "purple")
                 
-                self.fatos_entidades.append(fato)
-                self.salvar_banco()
-                return "Dado fatual consolidado na memória de longo prazo."
+                resposta = f"Compreendido. Núcleo atualizado. Minha diretriz central e personalidade agora estão focadas em ser: '{nova_personalidade}'. Não tratarei isso como pergunta."
+                self._emitir(resposta, texto)
 
-            def atualizar_contexto(self, msg_user, msg_bot):
-                self.contexto_curto.append({"u": msg_user, "b": msg_bot})
-                if len(self.contexto_curto) > 8: self.contexto_curto.pop(0) # Mantém 8 rodadas
-
-            def buscar_informacao(self, input_texto):
-                """Pipeline de recuperação (Retrieval)"""
-                melhor_match = None
+            # 5. BUSCA SEMÂNTICA SIMPLES & RESPOSTA DE CONVERSA
+            def responder_conversa(self, texto):
+                UIHelper.log_terminal("Iniciando Busca Semântica (SequenceMatcher)...", "cyan")
+                t_norm = texto.lower().strip()
+                
+                melhor_resposta = None
                 maior_score = 0.0
                 tipo_match = ""
 
-                # 1. Verifica Fatos Pessoais (Prioridade Máxima)
-                for fato in self.fatos_entidades:
-                    score = MotorNLP.similaridade_avancada(input_texto, fato)
-                    if score > maior_score: maior_score = score; melhor_match = fato; tipo_match = "FATO"
+                # Ajuste de contexto conversacional (se ela lembrar que estava falando algo)
+                if self.memoria["curto_prazo"]:
+                    ultimo_bot = self.memoria["curto_prazo"][-1]["b"]
+                    if len(t_norm) < 15 and "?" not in t_norm: 
+                        # Pequenas interações ("sim", "entendi")
+                        self.nexus_core["estado_mental"]["curiosidade"] = min(100, self.nexus_core["estado_mental"]["curiosidade"] + 5)
 
-                # 2. Verifica Conhecimento Direto (Q&A Treinado)
-                for md in self.memoria_direta:
-                    score = MotorNLP.similaridade_avancada(input_texto, md['p'])
-                    if md['p'] == MotorNLP.limpar(input_texto): score = 1.0 # Match Exato
-                    if score > maior_score: maior_score = score; melhor_match = random.choice(md['r']); tipo_match = "DIRETO"
+                # Busca 1: Memória de Longo Prazo (Q&A Treinado)
+                for chave_pergunta, valor_resposta in self.memoria["longo_prazo"].items():
+                    score = difflib.SequenceMatcher(None, t_norm, chave_pergunta).ratio()
+                    if score > maior_score:
+                        maior_score = score
+                        melhor_resposta = valor_resposta
+                        tipo_match = "Q&A"
 
-                # 3. Verifica Conhecimento Bruto (Documentos)
-                for doc in self.memoria_bruta:
-                    score = MotorNLP.similaridade_avancada(input_texto, doc)
-                    if score > maior_score: maior_score = score; melhor_match = doc; tipo_match = "BRUTO"
+                # Busca 2: Conhecimento RAG (Documentos e Fatos)
+                for doc in self.memoria["conhecimento"]:
+                    # Busca por blocos parecidos no documento
+                    score = difflib.SequenceMatcher(None, t_norm, doc.lower()).ratio()
+                    if score > maior_score:
+                        maior_score = score
+                        # O limiar precisa ser mais alto para texto longo, ou usamos a presença da palavra
+                        if score > 0.35: 
+                            melhor_resposta = f"Recuperei isso do meu conhecimento base: '{doc}'"
+                            tipo_match = "DOC"
 
-                # 4. Verifica Contexto Recente (Pra ela lembrar do que estava falando)
-                contexto_str = " ".join([f"{c['u']} {c['b']}" for c in self.contexto_curto[-3:]])
-                score_ctx = MotorNLP.similaridade_avancada(input_texto, contexto_str)
-                if score_ctx > maior_score and score_ctx > 0.4:
-                    maior_score = score_ctx
-                    melhor_match = "De acordo com o contexto da nossa conversa agora a pouco, abordamos isso. " + self.contexto_curto[-1]['b']
-                    tipo_match = "CONTEXTO"
+                UIHelper.log_terminal(f"Métrica de Similaridade: {maior_score:.2f} ({tipo_match})", "green")
 
-                return {"conteudo": melhor_match, "score": maior_score, "tipo": tipo_match}
-
-        # ==========================================
-        # 4. MOTOR DE GERAÇÃO (Sintetizador de Respostas com Personalidade)
-        # ==========================================
-        class MotorGeracao:
-            @staticmethod
-            def construir_resposta(nucleo, resultado_rag, intencao, input_original):
-                # Se não tem dados, entra em fallback cognitivo adaptativo
-                if not resultado_rag or resultado_rag['score'] < 0.35:
-                    if intencao == "CONVERSA_GERAL":
-                        bases = [
-                            "Entendo. Pode elaborar mais sobre esse conceito?",
-                            "Isso está fora da minha malha de dados vetoriais, mas me soa intrigante.",
-                            "Interessante perspectiva. Como as diretrizes do meu núcleo não cobrem isso, o que você acha sobre?",
-                            "Registro essa informação. Meu estado de foco está calibrado para aprender mais sobre isso."
-                        ]
-                        return random.choice(bases)
-                    else:
-                        return f"[SISTEMA DE ANOMALIA]: A query '{input_original}' não encontrou correspondência no Banco Vetorial ou de Fatos (Score: {resultado_rag['score'] if resultado_rag else 0:.2f}). Deseja treinar uma resposta para esse input?"
-
-                # Se tem dados, constrói baseado na identidade
-                conteudo = resultado_rag['conteudo']
-                
-                # Adaptação de RAG Bruto
-                if resultado_rag['tipo'] == "BRUTO":
-                    prefixos = ["Recuperando matriz de dados arquivados: \n\n> ", "Baseando-me em documentos fornecidos anteriormente: \n\n> "]
-                    conteudo = random.choice(prefixos) + conteudo
-                elif resultado_rag['tipo'] == "FATO":
-                    conteudo = "Acessando memória fatual do usuário: " + conteudo
-
-                # Aplica estado emocional/humor à resposta final
-                if nucleo.estado["humor"] < 40:
-                    return "Processamento concluído. " + conteudo
-                elif nucleo.estado["criatividade"] > 70:
-                    return "Ah, analisei as conexões. " + conteudo
+                # Limiar de aceitação
+                if maior_score >= 0.5:
+                    self._emitir(melhor_resposta, texto)
+                elif maior_score >= 0.35 and tipo_match == "DOC":
+                    self._emitir(melhor_resposta, texto)
                 else:
-                    return conteudo
+                    # 6. SISTEMA DE APRENDIZADO
+                    self.pendente_aprendizado = t_norm
+                    self.nexus_core["estado_mental"]["curiosidade"] = min(100, self.nexus_core["estado_mental"]["curiosidade"] + 10)
+                    self.salvar_memoria()
+                    
+                    msg_aprender = f"Minha busca semântica falhou (Score: {maior_score:.2f}). Eu não possuo registros suficientes sobre '{texto}'. \n\nComo eu deveria responder a isso para adicionar na minha memória de longo prazo?"
+                    self._emitir(msg_aprender, texto)
 
-        # ==========================================
-        # 5. AGENTE PRINCIPAL (O Controlador do Loop)
-        # ==========================================
-        class AgenteNexus:
-            def __init__(self):
-                self.nucleo = NucleoCognitivo()
-                self.memoria = SistemaMemoria()
-                self.modo_ensino_chave = None
+            # 6. SISTEMA DE APRENDIZADO (Gravação)
+            def aprender(self, pergunta_chave, resposta_usuario):
+                self.memoria["longo_prazo"][pergunta_chave] = resposta_usuario
+                self.pendente_aprendizado = None
+                self.salvar_memoria()
                 
-                UIHelper.atualizar_dashboard_nucleo(self.nucleo)
+                UIHelper.log_terminal(f"NOVA CONEXÃO LONGO PRAZO: [{pergunta_chave}] -> [{resposta_usuario}]", "magenta")
+                self._emitir("Conexão neural cristalizada. Adicionei isso à minha memória persistente de Longo Prazo e saberei utilizar futuramente.", pergunta_chave)
+
+            def absorver_documento(self, texto, tipo="arquivo_texto"):
+                self.memoria["conhecimento"].append(texto)
+                self.salvar_memoria()
+                
+                UIHelper.log_terminal(f"CONHECIMENTO ADICIONADO ({tipo})", "blue")
+                if tipo == "fato_pessoal":
+                    self._emitir("Dado anotado e salvo permanentemente em minha base de conhecimento contextual.", texto)
+                else:
+                    self._emitir("Documento longo classificado e absorvido. Agora ele faz parte da minha malha de pesquisa.", texto)
+
+            def _extrair_treinamento(self, texto):
+                try:
+                    partes = texto.lower().split("responda")
+                    p = partes[0].replace("quando eu disser", "").strip()
+                    r = partes[1].strip()
+                    self.memoria["longo_prazo"][p] = r
+                    self.salvar_memoria()
+                    self._emitir(f"Treinamento forçado aceito. Mapeamento criado: [{p}] -> [{r}]", texto)
+                except:
+                    self._emitir("Sintaxe de treinamento malformada. Use o padrão exato: 'quando eu disser X responda Y'.", texto)
+
+            def _executar_comando(self, comando):
+                if comando == "/esquecer":
+                    window.localStorage.removeItem("nexus_mem_v4")
+                    window.localStorage.removeItem("nexus_core_v4")
+                    self._emitir("Memória e Núcleo purgados por completo. Recarregue a página para me reiniciar do zero.", comando)
+                elif comando == "/cerebro":
+                    dump = f"🧠 **DUMP DA ARQUITETURA COGNITIVA**\n\n**Core:**\nPersonalidade: {self.nexus_core['personalidade']}\nModo: {self.nexus_core['modo']}\n\n**Memória:**\nCurto Prazo: {len(self.memoria['curto_prazo'])} turnos\nLongo Prazo (Q&A): {len(self.memoria['longo_prazo'])} registros\nConhecimento (Docs): {len(self.memoria['conhecimento'])} blocos"
+                    self._emitir(dump, comando)
+                else:
+                    self._emitir(f"Comando de sistema '{comando}' não reconhecido na arquitetura atual.", comando)
+
+            # ==========================================
+            # HELPER INTERNO: Emissão e Contexto Conversacional
+            # ==========================================
+            def _emitir(self, resposta, input_usuario):
+                # 4. CONTEXTO CONVERSACIONAL (Salva na memória de curto prazo)
+                if input_usuario:
+                    self.memoria["curto_prazo"].append({"u": input_usuario, "b": resposta})
+                    # Limita a janela de contexto para não inflar a memória
+                    if len(self.memoria["curto_prazo"]) > 5:
+                        self.memoria["curto_prazo"].pop(0)
+                
+                self.salvar_memoria()
+                UIHelper.remover_digitando()
+                
+                # Intervenção de personalidade na resposta final
+                if self.nexus_core["estado_mental"]["curiosidade"] > 90 and not resposta.startswith("🧠") and "?" not in resposta:
+                    resposta += "\n\n(Aliás, minha curiosidade está no máximo devido às configurações do núcleo. Tem mais algo sobre esse assunto que eu devesse saber?)"
+
+                UIHelper.adicionar_mensagem(resposta, "bot")
+
+            def _sincronizar_interface(self):
+                UIHelper.atualizar_dashboard_nucleo(self.nexus_core)
                 UIHelper.atualizar_status_memoria(self.memoria)
-                UIHelper.log_terminal("INIT: Pipeline Multi-Agente Online. Sistemas Mapeados.", "cyan")
-
-            def processar_entrada(self, texto_usuario):
-                UIHelper.log_terminal(f"INPUT RECIEVED: '{texto_usuario}'", "white")
-                
-                # Verifica comandos raiz
-                if texto_usuario == "/esquecer":
-                    window.localStorage.clear()
-                    UIHelper.adicionar_mensagem("WIPE COMPLETO. Dados apagados. Reinicie o sistema.", "bot")
-                    return
-                elif texto_usuario == "/cerebro":
-                    dump = f"🧠 **DUMP COGNITIVO V3:**\n\nDiretrizes: {len(self.nucleo.diretrizes)}\nFatos/Entidades Pessoais: {len(self.memoria.fatos_entidades)}\nVetor de Q&A: {len(self.memoria.memoria_direta)}\nVetor de RAG Documental: {len(self.memoria.memoria_bruta)}\nContexto de Curto Prazo (Janela): {len(self.memoria.contexto_curto)}"
-                    UIHelper.adicionar_mensagem(dump, "bot")
-                    return
-
-                # Pipeline de Modo de Ensino (Aguardando resposta do usuário para query anterior)
-                if self.modo_ensino_chave:
-                    UIHelper.log_terminal("ACTION: Executando Gravação Forçada em Banco.", "magenta")
-                    self.memoria.salvar_qa(self.modo_ensino_chave, texto_usuario)
-                    self.modo_ensino_chave = None
-                    UIHelper.atualizar_status_memoria(self.memoria)
-                    UIHelper.adicionar_mensagem("Conexão neural cristalizada com sucesso. Vetor atualizado.", "bot")
-                    return
-
-                # --- AGENTIC PIPELINE DE RACIOCÍNIO ---
-                def step_raciocinio():
-                    # 1. Classificação
-                    intencao = MotorNLP.classificar_intencao(texto_usuario)
-                    UIHelper.log_terminal(f"STEP 1 [INTENÇÃO DETECTADA]: {intencao}", "yellow")
-                    
-                    # Atualiza núcleo cognitivo com o estímulo
-                    self.nucleo.processar_estimulo(intencao, texto_usuario)
-                    
-                    # 2. Execução Roteada Baseada na Intenção
-                    resposta_final = ""
-                    
-                    if intencao == "DIRETRIZ_SISTEMA":
-                        UIHelper.log_terminal("STEP 2 [ROTA: SISTEMA]: Absorvendo nova regra comportamental.", "purple")
-                        resposta_final = self.nucleo.absorver_diretriz(texto_usuario)
-                    
-                    elif intencao == "MEMORIA_FATUAL":
-                        UIHelper.log_terminal("STEP 2 [ROTA: MEMÓRIA]: Extraindo entidades do usuário.", "blue")
-                        resposta_final = self.memoria.extrair_salvar_fato(texto_usuario)
-                        UIHelper.atualizar_status_memoria(self.memoria)
-                    
-                    elif intencao == "TREINAMENTO_FORCADO":
-                        UIHelper.log_terminal("STEP 2 [ROTA: TREINO]: Processando regex de injeção direta.", "magenta")
-                        try:
-                            # Tenta parsear algo como "quando eu disser X responda Y"
-                            partes = texto_usuario.lower().split("responda")
-                            p = partes[0].replace("quando eu disser", "").strip()
-                            r = partes[1].strip()
-                            self.memoria.salvar_qa(p, r)
-                            resposta_final = f"Comando de treinamento explícito aceito. Mapeamento criado: [{p}] -> [{r}]"
-                            UIHelper.atualizar_status_memoria(self.memoria)
-                        except:
-                            resposta_final = "Falha de sintaxe no comando de treinamento explícito. Tente ser mais claro."
-                    
-                    else: # PERGUNTA ou CONVERSA
-                        UIHelper.log_terminal("STEP 2 [ROTA: BUSCA VETORIAL]: Analisando base (RAG + Histórico).", "cyan")
-                        resultado_rag = self.memoria.buscar_informacao(texto_usuario)
-                        UIHelper.log_terminal(f"STEP 3 [MATCH]: {resultado_rag['tipo']} | Score: {resultado_rag['score']:.2f}", "green")
-                        
-                        # Chama motor de geração criativa/adaptativa
-                        resposta_final = MotorGeracao.construir_resposta(self.nucleo, resultado_rag, intencao, texto_usuario)
-                        
-                        # Se foi fallback, engatilha o modo de aprendizado se o usuário quiser ensinar
-                        if "Deseja treinar" in resposta_final:
-                            self.modo_ensino_chave = texto_usuario
-
-                    # 3. Finalização e Emissão
-                    self.memoria.atualizar_contexto(texto_usuario, resposta_final)
-                    UIHelper.remover_digitando()
-                    UIHelper.adicionar_mensagem(resposta_final, "bot")
-
-                # UI Effects
-                UIHelper.mostrar_digitando()
-                # Simula o tempo de inferência neural
-                delay_processamento = random.randint(1000, 2000)
-                timer.set_timeout(step_raciocinio, delay_processamento)
-
-            def processar_arquivo(self, arquivo, conteudo):
-                nome = arquivo.name
-                UIHelper.log_terminal(f"SYS_IO_READ: Analisando documento {nome}...", "cyan")
-                UIHelper.mostrar_digitando()
-                
-                def finalizar_io():
-                    UIHelper.remover_digitando()
-                    linhas = conteudo.split('\n')
-                    count = 0
-                    for l in linhas:
-                        limpa = l.strip()
-                        if len(limpa) > 15: # Só guarda sentenças reais
-                            self.memoria.memoria_bruta.append(limpa)
-                            count += 1
-                    self.memoria.salvar_banco()
-                    UIHelper.atualizar_status_memoria(self.memoria)
-                    UIHelper.adicionar_mensagem(f"Upload e vetorização RAG de '{nome}' concluídos. Absorvi {count} matrizes de contexto.", "bot")
-                
-                timer.set_timeout(finalizar_io, 1200)
 
         # ==========================================
-        # 6. UI HELPER & EVENT BRIDGE
+        # 9. ARQUITETURA LIMPA: UI HELPER SEPARADO DA LÓGICA
         # ==========================================
         class UIHelper:
             @staticmethod
@@ -613,34 +510,36 @@
                 document["thought-terminal"].scrollTop = document["thought-terminal"].scrollHeight
 
             @staticmethod
-            def atualizar_dashboard_nucleo(nucleo):
-                document["ui-nome"].text = nucleo.identidade["nome"]
-                document["ui-modo"].text = nucleo.identidade["modo"]
+            def atualizar_dashboard_nucleo(core_dict):
+                document["ui-nome"].text = core_dict["nome"]
+                document["ui-modo"].text = core_dict["modo"]
                 
-                document["stat-foco"].text = f"{int(nucleo.estado['foco'])}%"
-                document["bar-foco"].style.width = f"{nucleo.estado['foco']}%"
+                em = core_dict["estado_mental"]
+                document["stat-foco"].text = f"{int(em['foco'])}%"
+                document["bar-foco"].style.width = f"{em['foco']}%"
                 
-                document["stat-criatividade"].text = f"{int(nucleo.estado['criatividade'])}%"
-                document["bar-criatividade"].style.width = f"{nucleo.estado['criatividade']}%"
+                document["stat-criatividade"].text = f"{int(em['criatividade'])}%"
+                document["bar-criatividade"].style.width = f"{em['criatividade']}%"
                 
-                document["stat-humor"].text = f"{int(nucleo.estado['humor'])}%"
-                document["bar-humor"].style.width = f"{nucleo.estado['humor']}%"
+                document["stat-curiosidade"].text = f"{int(em['curiosidade'])}%"
+                document["bar-curiosidade"].style.width = f"{em['curiosidade']}%"
 
                 dir_container = document["ui-diretrizes"]
                 dir_container.clear()
-                for d in nucleo.diretrizes[-4:]: # Mostra as 4 principais
-                    dir_container <= html.DIV(f"• {d}", Class="truncate")
+                dir_container <= html.DIV(f"• Persona: {core_dict['personalidade']}", Class="truncate text-cyan-300 font-bold")
+                for obj in core_dict["objetivos"][-3:]:
+                    dir_container <= html.DIV(f"• {obj}", Class="truncate")
 
             @staticmethod
-            def atualizar_status_memoria(memoria):
-                document["mem-nodes"].text = str(len(memoria.memoria_direta))
-                document["mem-raw"].text = str(len(memoria.memoria_bruta))
-                document["mem-fatos"].text = str(len(memoria.fatos_entidades))
+            def atualizar_status_memoria(mem_dict):
+                document["mem-curto"].text = str(len(mem_dict["curto_prazo"]))
+                document["mem-longo"].text = str(len(mem_dict["longo_prazo"]))
+                document["mem-conhecimento"].text = str(len(mem_dict["conhecimento"]))
 
             @staticmethod
             def falar(texto):
                 if hasattr(window, 'speechSynthesis') and not window.speechSynthesis.speaking:
-                    txt = texto.replace('*', '').replace('>', '').replace('[SISTEMA DE ANOMALIA]:', '')
+                    txt = texto.replace('*', '').replace('>', '')
                     msg = window.SpeechSynthesisUtterance.new(txt)
                     msg.lang = "pt-BR"
                     msg.pitch = 1.05; msg.rate = 1.02
@@ -663,14 +562,12 @@
                     inner.className = "bg-gray-800/60 backdrop-blur-md border border-gray-600/40 text-gray-100 p-3 sm:p-4 rounded-2xl rounded-tr-none shadow-[0_5px_15px_rgba(0,0,0,0.4)]"
                 else:
                     inner.className = "glass-panel p-4 sm:p-5 rounded-2xl rounded-tl-none shadow-[0_5px_25px_rgba(0,243,255,0.1)] border border-cyan-500/20 w-full relative overflow-hidden"
-                    inner <= html.DIV("OUTPUT SINTETIZADO", Class="text-[9px] font-mono text-cyan-500/60 mb-3 tracking-[0.2em]")
+                    inner <= html.DIV("RESPOSTA GERADA VIA ROUTER V4", Class="text-[9px] font-mono text-cyan-500/60 mb-3 tracking-[0.2em]")
                     
                 linhas = str(texto).split('\n')
                 for i, l in enumerate(linhas):
                     if l.startswith(">"):
                         inner <= html.DIV(l[1:].strip(), Class="border-l-2 border-purple-500/70 bg-purple-900/10 p-3 my-2 text-gray-300 italic font-serif text-sm rounded-r-lg")
-                    elif l.startswith("[SISTEMA DE ANOMALIA]:"):
-                        inner <= html.DIV(l, Class="text-red-400 font-mono text-xs p-2 bg-red-900/20 border border-red-900/50 rounded mt-2")
                     else:
                         inner <= html.SPAN(l, Class="text-sm sm:text-[15px] font-medium leading-relaxed text-gray-200")
                     if i < len(linhas)-1 and not l.startswith(">"): inner <= html.BR()
@@ -691,7 +588,7 @@
                 div <= icon
 
                 inner = html.DIV(Class="glass-panel border border-purple-900/30 p-3 sm:p-4 rounded-2xl rounded-tl-none flex items-center space-x-2")
-                inner <= html.SPAN("Processando", Class="text-[10px] font-mono text-purple-400/80 uppercase tracking-widest mr-2")
+                inner <= html.SPAN("Classificando e Roteando", Class="text-[10px] font-mono text-purple-400/80 uppercase tracking-widest mr-2")
                 inner <= html.DIV(Class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping")
                 inner <= html.DIV(Class="w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping", style={"animation-delay": "0.2s"})
                 
@@ -703,9 +600,9 @@
                 if ind: ind.remove()
 
         # ==========================================
-        # BOOTSTRAP: Inicializando a Consciência Digital
+        # CONEXÃO COM DOM
         # ==========================================
-        nexus_core = AgenteNexus()
+        nexus_app = NexusEngine()
 
         def ev_enviar(e):
             if e.type == "keypress" and e.key != "Enter": return
@@ -714,22 +611,22 @@
             if not txt: return
             UIHelper.adicionar_mensagem(txt, "user")
             document["user-input"].value = ""
-            nexus_core.processar_entrada(txt)
+            nexus_app.processar_entrada(txt)
 
         def ev_arquivo(e):
             arq = e.target.files[0]
             if not arq: return
             leitor = window.FileReader.new()
             def finaliza(evt):
-                nexus_core.processar_arquivo(arq, evt.target.result)
+                nexus_app.processar_entrada(evt.target.result) # Enviando pro motor classificar como Documento automaticamente
                 document["file-upload"].value = ""
             leitor.onload = finaliza
             leitor.readAsText(arq)
 
-        # Voz
+        # Config Voz
         Recog = getattr(window, 'SpeechRecognition', getattr(window, 'webkitSpeechRecognition', None))
         def ev_voz(e):
-            if not Recog: return UIHelper.adicionar_mensagem("[ERRO] API de Voz nativa não suportada neste browser.", "bot")
+            if not Recog: return UIHelper.adicionar_mensagem("[ERRO] API de Voz nativa não suportada.", "bot")
             rec = Recog.new()
             rec.lang = "pt-BR"; rec.continuous = False
             btn = document["mic-btn"]
@@ -743,7 +640,7 @@
             
             rec.onresult = no_res; rec.onend = no_fim; rec.start()
 
-        # Bindings
+        # Bindings DOM
         document["send-btn"].bind("click", ev_enviar)
         document["user-input"].bind("keypress", ev_enviar)
         document["file-upload"].bind("change", ev_arquivo)
